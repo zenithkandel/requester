@@ -5,27 +5,58 @@
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+header('Allow: GET, POST, OPTIONS');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
 
-// Health check: GET proxy.php with no body -> usage info (also lets UI test availability)
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && empty(file_get_contents('php://input'))) {
-    echo json_encode(['ok' => true, 'proxy' => 'php-cors-proxy', 'usage' => 'POST JSON {url, method, headers, body}']);
+$data = null;
+
+// --- Transport 2: GET fallback (used when POST is blocked, e.g. 405 from server) ---
+// proxy.php?url=https%3A...&method=POST&headers=%7B...%7D&body=...&body_b64=...
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['url']) && $_GET['url'] !== '') {
+    $h = [];
+    if (isset($_GET['headers']) && $_GET['headers'] !== '') {
+        $decoded = json_decode((string)$_GET['headers'], true);
+        if (is_array($decoded)) $h = $decoded;
+    }
+    $b = null;
+    if (isset($_GET['body_b64']) && $_GET['body_b64'] !== '') {
+        $tmp = base64_decode((string)$_GET['body_b64'], true);
+        $b = ($tmp === false) ? (string)$_GET['body_b64'] : $tmp;
+    } elseif (isset($_GET['body'])) {
+        $b = (string)$_GET['body'];
+    }
+    $data = [
+        'url'     => (string)$_GET['url'],
+        'method'  => isset($_GET['method']) ? (string)$_GET['method'] : 'GET',
+        'headers' => $h,
+        'body'    => $b,
+    ];
+}
+
+// --- Health check: plain GET with no ?url= ---
+if ($data === null && $_SERVER['REQUEST_METHOD'] === 'GET' && empty(file_get_contents('php://input'))) {
+    echo json_encode(['ok' => true, 'proxy' => 'php-cors-proxy', 'usage' => 'POST JSON {url, method, headers, body} or GET ?url=...&method=...&headers=...&body=...']);
     exit;
 }
 
-$raw = file_get_contents('php://input');
-$data = json_decode($raw, true);
-
-if (!is_array($data)) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Invalid JSON payload. Expected {url, method, headers, body}.']);
-    exit;
+// --- Transport 1: POST JSON (primary) + form fallback ---
+if ($data === null) {
+    $raw = file_get_contents('php://input');
+    $data = json_decode($raw, true);
+    if (!is_array($data) && isset($_POST['payload'])) {
+        $data = json_decode((string)$_POST['payload'], true);
+    }
+    if (!is_array($data)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON payload. Expected {url, method, headers, body}.']);
+        exit;
+    }
 }
 
 $url    = trim((string)($data['url'] ?? ''));
