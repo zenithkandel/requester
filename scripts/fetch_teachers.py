@@ -109,7 +109,6 @@ def _unlock(fp):
 
 def pool_pick_least_used(path=None):
     """Return (proxy_dict | None, warning | None) — mirrors proxy.php."""
-    global _PROXY_WARNED
     path = path or PROXY_FILE
     if not os.path.isfile(path):
         return None, "pool empty — add proxies first"
@@ -423,6 +422,7 @@ def fetch_evaluatees(access_token, session_id):
     _, data = api_get_json(
         f"{BASE_URL}{EVALUATEES_PATH}?evaluation_session_id={session_id}",
         headers,
+        log_proxy=True,
     )
     if isinstance(data, dict) and data.get("errors"):
         raise RuntimeError(f"evaluatees rejected: {data['errors']}")
