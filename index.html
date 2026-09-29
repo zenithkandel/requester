@@ -496,9 +496,10 @@
           <option value="txt">TXT</option>
           <option value="json">JSON</option>
         </select>
-        <label class="btn btn-sm" for="poolFile" style="cursor:pointer">Choose file</label>
-        <input type="file" id="poolFile" accept=".txt,.json,.text,.list" hidden />
-        <button class="btn btn-sm btn-dark" id="poolAddBtn">Add to pool</button>
+          <label class="btn btn-sm" for="poolFile" style="cursor:pointer">Choose file</label>
+          <input type="file" id="poolFile" accept=".txt,.json,.text,.list" hidden />
+          <button class="btn btn-sm btn-dark" id="poolAddBtn">Add to pool</button>
+          <button class="btn btn-sm" id="poolPullBtn" title="Replace pool with the latest free list from ProxyScrape — repeats keep their used count">↓ Pull latest</button>
       </div>
       <textarea class="code pool-box" id="poolInput" placeholder="http://user:pass@1.2.3.4:8080&#10;socks5://5.6.7.8:1080&#10;9.9.9.9:3128" spellcheck="false"></textarea>
       <div class="modal-err" id="poolErr"></div>
@@ -1044,6 +1045,20 @@
     }catch(e){poolErr(String((e&&e.message)||e));}
   };
   $("poolRefresh").onclick=()=>loadPool();
+  $("poolPullBtn").onclick=async()=>{
+    const btn=$("poolPullBtn");
+    btn.disabled=true;const old=btn.textContent;btn.textContent="Pulling…";poolErr(null);
+    try{
+      const r=await fetch("proxies.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"refresh"})});
+      const raw=await r.text();
+      let d=null;try{d=JSON.parse(raw);}catch{d=null;}
+      if(!d)throw new Error("proxies.php returned non-JSON (status "+r.status+"): "+raw.slice(0,200));
+      if(d.error)throw new Error(d.error);
+      renderPool(d.proxies||[]);
+      toast("Refreshed: "+(d.added||0)+" new · "+(d.kept||0)+" kept"+((d.dropped)?" · "+d.dropped+" dropped":""));
+    }catch(e){poolErr(String((e&&e.message)||e));}
+    finally{btn.disabled=false;btn.textContent=old;}
+  };
   const poolOverlay=$("poolOverlay");
   function openPool(){poolErr(null);poolOverlay.classList.add("open");loadPool();}
   function closePool(){poolOverlay.classList.remove("open");}

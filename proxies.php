@@ -162,6 +162,59 @@ if ($action === 'import') {
     exit;
 }
 
+define('PROXY_SOURCE_URL', 'https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=protocolipport&format=text');
+
+if ($action === 'refresh') {
+    // Pull the latest free list, REPLACE the pool, but keep `used` counts
+    // (and ids) for proxies that appear in both old and new lists.
+    $src = trim((string)($input['source'] ?? PROXY_SOURCE_URL));
+    if ($src === '') $src = PROXY_SOURCE_URL;
+    if (!filter_var($src, FILTER_VALIDATE_URL) || !in_array(strtolower((string)parse_url($src, PHP_URL_SCHEME)), ['http', 'https'], true)) {
+        http_response_code(400); echo json_encode(['error' => 'Invalid source URL.']); exit;
+    }
+    if (!function_exists('curl_init')) { http_response_code(500); echo json_encode(['error' => 'PHP cURL extension is not enabled.']); exit; }
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $src);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_MAXREDIRS, 3);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 25);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'minimal-api-client/1.0');
+    $body = curl_exec($ch);
+    $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $cerr = curl_error($ch);
+    curl_close($ch);
+    if ($body === false || $body === '' || $code < 200 || $code >= 300) {
+        http_response_code(502);
+        echo json_encode(['error' => 'Could not fetch proxy source (HTTP ' . $code . '): ' . ($cerr ?: 'empty response')]);
+        exit;
+    }
+    if (strlen($body) > 2 * 1024 * 1024) { http_response_code(502); echo json_encode(['error' => 'Source response too large.']); exit; }
+    $entries = [];
+    foreach (preg_split('/\r\n|\n|\r/', $body) as $ln) {
+        [$e, $errLine] = pool_parse_line($ln);
+        if ($e) $entries[] = $e;
+    }
+    // dedupe fresh list, keep first-seen order
+    $uniq = []; $seenNew = [];
+    foreach ($entries as $e) { $k = pool_key($e); if (!isset($seenNew[$k])) { $seenNew[$k] = true; $uniq[] = $e; } }
+    $old = pool_read_raw();
+    $oldByKey = [];
+    foreach ($old as $e) if (is_array($e)) $oldByKey[pool_key($e)] = $e;
+    $final = []; $kept = 0; $added = 0;
+    foreach ($uniq as $e) {
+        $k = pool_key($e);
+        if (isset($oldByKey[$k])) { $final[] = $oldByKey[$k]; $kept++; }  // repeat: keep id + used count
+        else { $final[] = $e; $added++; }                                 // new: starts at used 0
+    }
+    if (!pool_write_raw($final)) { http_response_code(500); echo json_encode(['error' => 'Cannot write proxy.json.']); exit; }
+    echo json_encode(['refreshed' => true, 'added' => $added, 'kept' => $kept,
+        'dropped' => count($old) - $kept, 'total' => count($final), 'proxies' => pool_public($final)]);
+    exit;
+}
+
 if ($action === 'delete') {
     $id = (string)($input['id'] ?? '');
     $list = array_values(array_filter(pool_read_raw(), function ($e) use ($id) {
@@ -188,4 +241,4 @@ if ($action === 'reset_usage') {
 }
 
 http_response_code(400);
-echo json_encode(['error' => 'Unknown action. Use list/import/delete/clear/reset_usage.']);
+echo json_encode(['error' => 'Unknown action. Use list/import/delete/clear/reset_usage/refresh.']);
