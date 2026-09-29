@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>request — minimal api client</title>
+<script>try{var __t=localStorage.getItem("minimal-request-theme-v1");if(__t!=="dark"&&__t!=="light")__t=(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";document.documentElement.dataset.theme=__t||"light";}catch(e){document.documentElement.dataset.theme="light";}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -23,6 +24,7 @@
     --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   *{box-sizing:border-box}
+  html{color-scheme:light}
   html,body{height:100%}
   body{
     margin:0;
@@ -314,6 +316,74 @@
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+  /* dark mode — full black & white inversion */
+  html[data-theme="dark"]{color-scheme:dark}
+  html[data-theme="dark"]{
+    --bg:#0a0a0a;
+    --bg-soft:#131313;
+    --bg-muted:#1b1b1b;
+    --border:#262626;
+    --border-strong:#3d3d3d;
+    --text:#f4f4f4;
+    --text-2:#b8b8b8;
+    --text-3:#7d7d7d;
+  }
+  html[data-theme="dark"] ::selection{background:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] header{background:rgba(10,10,10,.86)}
+  html[data-theme="dark"] .card{background:#101010}
+  html[data-theme="dark"] .btn{background:#161616}
+  html[data-theme="dark"] .btn:hover{background:#1f1f1f}
+  html[data-theme="dark"] .btn-dark{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .btn-dark:hover{background:#ffffff;border-color:#ffffff;color:#0a0a0a}
+  html[data-theme="dark"] .btn-dark:disabled{background:#1e1e1e;border-color:#1e1e1e;color:#555}
+  html[data-theme="dark"] .btn.pool-on{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .btn.pool-on .nav-count{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.2);color:#0a0a0a}
+  html[data-theme="dark"] .mark{background:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .url-input{background:#161616}
+  html[data-theme="dark"] .url-input::placeholder{color:#4c4c4c}
+  html[data-theme="dark"] .url-input:focus{box-shadow:0 0 0 3px rgba(255,255,255,.09)}
+  html[data-theme="dark"] .method-wrap.get select{background:#f4f4f4;color:#0a0a0a;border-color:#f4f4f4}
+  html[data-theme="dark"] .method-wrap.get::after{color:#0a0a0a}
+  html[data-theme="dark"] .kv-row input, html[data-theme="dark"] .text-input, html[data-theme="dark"] .text-select{background:#161616}
+  html[data-theme="dark"] .kv-row input::placeholder{color:#4c4c4c}
+  html[data-theme="dark"] .check{background:#161616}
+  html[data-theme="dark"] .check.on{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] textarea.code{background:#111111}
+  html[data-theme="dark"] textarea.code::placeholder{color:#4c4c4c}
+  html[data-theme="dark"] textarea.code:focus{background:#161616;box-shadow:0 0 0 3px rgba(255,255,255,.09)}
+  html[data-theme="dark"] .switch .track{background:#3d3d3d}
+  html[data-theme="dark"] .switch input:checked + .track{background:#f4f4f4}
+  html[data-theme="dark"] .switch input:checked + .track::after{background:#0a0a0a}
+  html[data-theme="dark"] .proxy-status{background:#161616}
+  html[data-theme="dark"] .proxy-status.on{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] #bodyDot{background:#f4f4f4!important;color:#0a0a0a!important;border-color:#f4f4f4!important}
+  html[data-theme="dark"] .tab.active .count{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .status-pill{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .status-pill i{background:#0a0a0a}
+  html[data-theme="dark"] .status-pill.err{background:#161616;color:#f4f4f4}
+  html[data-theme="dark"] .status-pill.err i{background:#f4f4f4}
+  html[data-theme="dark"] .m-badge.GET{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .chrome-tab{background:#161616}
+  html[data-theme="dark"] .chrome-tab:hover{background:#1f1f1f}
+  html[data-theme="dark"] .chrome-tab.active{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .chrome-tab.active .tab-badge{border-color:rgba(0,0,0,.35);color:#0a0a0a}
+  html[data-theme="dark"] .chrome-tab.active .tab-sub{color:rgba(0,0,0,.6)}
+  html[data-theme="dark"] .chrome-tab.active .tab-x{color:rgba(0,0,0,.55)}
+  html[data-theme="dark"] .tab-rename{background:#0a0a0a;color:var(--text)}
+  html[data-theme="dark"] .chrome-tab.active .tab-rename{background:#fff;color:#0a0a0a;border-color:#fff}
+  html[data-theme="dark"] .pool-item{background:#161616}
+  html[data-theme="dark"] .pool-item .t{background:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .pool-item .t.socks{background:transparent;color:#f4f4f4;border-color:#f4f4f4}
+  html[data-theme="dark"] .modal{background:#111111}
+  html[data-theme="dark"] .error-box{background:#111111}
+  html[data-theme="dark"] .toast{background:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .spinner{border-color:rgba(0,0,0,.25);border-top-color:#0a0a0a}
+  html[data-theme="dark"] .saved-dot i{background:#f4f4f4}
+  html[data-theme="dark"] .saved-dot.saving i{background:#3d3d3d}
+  html[data-theme="dark"] .json-state.valid i{background:#f4f4f4}
+  html[data-theme="dark"] .overlay{background:rgba(0,0,0,.68)}
+  html[data-theme="dark"] pre.output{border:1px solid var(--border)}
+
   .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:-2px;margin-right:8px}
   @keyframes spin{to{transform:rotate(360deg)}}
 </style>
@@ -334,6 +404,7 @@
       <button class="btn btn-sm" id="poolBtn" title="Manage proxy pool">Proxies<span class="nav-count" id="poolNavCount">0</span></button>
       <label class="switch switch-sm" title="Use random proxy — least-used first"><input type="checkbox" id="poolToggle"><span class="track"></span></label>
       <span id="poolStatus" hidden></span>
+      <button class="btn btn-sm btn-ghost" id="themeBtn" title="Switch to dark mode">◐</button>
       <button class="btn btn-sm btn-ghost" id="copyCurlBtn" title="Copy as cURL">cURL</button>
       <button class="btn btn-sm btn-ghost" id="copyFetchBtn" title="Copy as JS fetch">fetch()</button>
       <button class="btn btn-sm" id="clearBtn">Reset</button>
@@ -1310,6 +1381,18 @@
     updateCounts();validateJson();
     if(scroll)window.scrollTo({top:0,behavior:"smooth"});
   }
+
+  /* ---------- theme (dark mode) ---------- */
+  const LS_THEME = "minimal-request-theme-v1";
+  function applyTheme(t){
+    if(t!=="dark"&&t!=="light")t="light";
+    document.documentElement.dataset.theme=t;
+    try{localStorage.setItem(LS_THEME,t);}catch{}
+    const b=$("themeBtn");
+    if(b){b.textContent=(t==="dark")?"☀":"◐";b.title=(t==="dark")?"Switch to light mode":"Switch to dark mode";}
+  }
+  $("themeBtn").onclick=()=>{applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");};
+  applyTheme(document.documentElement.dataset.theme||"light");
 
   /* ---------- toast ---------- */
   let toastT;
