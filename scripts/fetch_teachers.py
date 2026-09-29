@@ -30,6 +30,11 @@ best chance of getting through, install Chrome TLS impersonation first:
 
 With it installed the script talks exactly like real desktop Chrome; without
 it, it falls back to urllib with full browser headers (often still blocked).
+
+Outbound requests go through the proxy pool in ../proxy.json using the same
+logic as proxy.php: random pick among the least-used proxies, its `used` /
+`last_used` counters bumped and written back (file-locked). Use --no-proxy to
+send direct, --proxy-file to point at another pool.
 """
 
 import argparse
@@ -102,9 +107,10 @@ def _unlock(fp):
         pass
 
 
-def pool_pick_least_used(path=PROXY_FILE):
+def pool_pick_least_used(path=None):
     """Return (proxy_dict | None, warning | None) — mirrors proxy.php."""
     global _PROXY_WARNED
+    path = path or PROXY_FILE
     if not os.path.isfile(path):
         return None, "pool empty — add proxies first"
     try:
@@ -397,6 +403,7 @@ def login(identity, password):
         BASE_URL + LOGIN_PATH,
         {"identity": identity, "password": password},
         LOGIN_HEADERS,
+        log_proxy=True,
     )
     if isinstance(data, dict) and data.get("errors"):
         raise RuntimeError(f"login rejected: {data['errors']}")
@@ -438,7 +445,17 @@ def main():
                     help="folder for teacher photos (default: scripts/images)")
     ap.add_argument("--no-images", action="store_true",
                     help="skip downloading staff photos")
+    ap.add_argument("--no-proxy", action="store_true",
+                    help="send direct — ignore the proxy.json pool")
+    ap.add_argument("--proxy-file", default=None,
+                    help="proxy pool JSON (default: ../proxy.json)")
     args = ap.parse_args()
+
+    global USE_POOL, PROXY_FILE
+    if args.no_proxy:
+        USE_POOL = False
+    if args.proxy_file:
+        PROXY_FILE = os.path.abspath(args.proxy_file)
 
     creds = load_credentials(args.users_file)
     print(f"[*] {len(creds)} account(s) loaded from {args.users_file}", flush=True)
@@ -450,6 +467,15 @@ def main():
         print("[!] 'curl_cffi' is NOT installed — Cloudflare will probably "
               "block plain Python (error 1010).", flush=True)
         print("    fix: pip install curl_cffi   (then re-run)", flush=True)
+    if USE_POOL:
+        try:
+            with open(PROXY_FILE, "r", encoding="utf-8") as f:
+                n = len((json.load(f).get("proxies") or []))
+            print(f"[*] proxy pool: {n} prox(ies) in {PROXY_FILE}", flush=True)
+        except Exception as e:
+            print(f"[!] proxy pool unavailable ({e}) — sent direct", flush=True)
+    else:
+        print("[*] proxy pool: disabled (--no-proxy)", flush=True)
 
     teachers_by_id = {}   # staff_id -> full teacher object (first seen wins)
     order = []            # staff_ids in first-seen order
