@@ -35,6 +35,7 @@ it, it falls back to urllib with full browser headers (often still blocked).
 import argparse
 import json
 import os
+import random
 import re
 import sys
 import time
@@ -64,6 +65,111 @@ LOGIN_PATH = "/api/v1/publics/user/login"
 EVALUATEES_PATH = "/api/v1/evaluation/evaluatees"
 TIMEOUT = 30
 PAUSE_BETWEEN_ACCOUNTS = 1.0  # seconds, be gentle with the server
+
+# Outbound proxy pool — same logic as proxy.php pool_pick_least_used():
+# random pick among the least-used proxies, bump used/last_used, write back.
+PROXY_FILE = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "proxy.json")
+)
+USE_POOL = True          # toggled by --no-proxy / --proxy-file
+_PROXY_WARNED = False    # only warn once about pool problems
+
+
+def _lock(fp):
+    try:
+        if os.name == "nt":
+            import msvcrt
+            fp.seek(0)
+            msvcrt.locking(fp.fileno(), msvcrt.LK_LOCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(fp.fileno(), fcntl.LOCK_EX)
+        return True
+    except Exception:
+        return False
+
+
+def _unlock(fp):
+    try:
+        if os.name == "nt":
+            import msvcrt
+            fp.seek(0)
+            msvcrt.locking(fp.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(fp.fileno(), fcntl.LOCK_UN)
+    except Exception:
+        pass
+
+
+def pool_pick_least_used(path=PROXY_FILE):
+    """Return (proxy_dict | None, warning | None) — mirrors proxy.php."""
+    global _PROXY_WARNED
+    if not os.path.isfile(path):
+        return None, "pool empty — add proxies first"
+    try:
+        fp = open(path, "r+b")
+    except OSError as e:
+        return None, f"cannot open proxy.json: {e}"
+    locked = _lock(fp)
+    try:
+        raw = fp.read().decode("utf-8", "replace")
+        try:
+            doc = json.loads(raw) if raw.strip() else None
+        except ValueError:
+            doc = None
+        items = doc.get("proxies") if isinstance(doc, dict) else None
+        items = items if isinstance(items, list) else []
+        valid = []
+        for e in items:
+            if isinstance(e, dict) and e.get("host") and e.get("port"):
+                e["used"] = int(e.get("used") or 0)
+                valid.append(e)
+        if not valid:
+            return None, "pool empty — add proxies first"
+        lo = min(e["used"] for e in valid)
+        pick = random.choice([e for e in valid if e["used"] == lo])
+        pick["used"] += 1
+        pick["last_used"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        if locked:
+            fp.seek(0)
+            fp.truncate()
+            fp.write(json.dumps({"proxies": items}, indent=4,
+                                ensure_ascii=False).encode("utf-8"))
+            fp.flush()
+    finally:
+        if locked:
+            _unlock(fp)
+        fp.close()
+    return pick, None
+
+
+def proxy_url(p):
+    """curl proxy URL — socks5 uses socks5h (remote DNS) like CURLPROXY_SOCKS5_HOSTNAME."""
+    scheme = str(p.get("type") or "http").lower()
+    scheme = {"socks5": "socks5h", "socks4": "socks4", "https": "https",
+              "http": "http"}.get(scheme, "http")
+    auth = ""
+    if p.get("user"):
+        auth = f"{p['user']}:{p.get('pass') or ''}@"
+    return f"{scheme}://{auth}{p['host']}:{int(p['port'])}"
+
+
+def _pick_proxy(log=False):
+    """Pick a pool proxy for this request; returns (url|None, warning|None)."""
+    global _PROXY_WARNED
+    if not USE_POOL:
+        return None, None
+    entry, warn = pool_pick_least_used()
+    if warn:
+        if not _PROXY_WARNED:
+            print(f"[!] {warn} — sent direct", flush=True)
+            _PROXY_WARNED = True
+        return None, warn
+    if log:
+        print(f"    [~] proxy {entry['host']}:{entry['port']} "
+              f"({entry.get('type', 'http')}, used {entry['used']})", flush=True)
+    return proxy_url(entry), None
 
 
 def load_credentials(path):
@@ -140,11 +246,21 @@ def _fail(status, reason, body_text, url):
                        + f"  [url: {url}]")
 
 
-def api_post_json(url, payload, headers):
+def _urllib_open(req, purl):
+    if purl:
+        scheme = "https" if req.full_url.startswith("https://") else "http"
+        opener = urllib.request.build_opener(
+            urllib.request.ProxyHandler({scheme: purl}))
+        return opener.open(req, timeout=TIMEOUT)
+    return urllib.request.urlopen(req, timeout=TIMEOUT)
+
+
+def api_post_json(url, payload, headers, log_proxy=False):
+    purl, _ = _pick_proxy(log=log_proxy)
     if HAS_CFFI:
         try:
             r = _cffi_session().post(url, json=payload, headers=headers,
-                                     timeout=TIMEOUT)
+                                     timeout=TIMEOUT, proxy=purl)
             try:
                 data = r.json()
             except Exception:
@@ -163,7 +279,7 @@ def api_post_json(url, payload, headers):
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+        with _urllib_open(req, purl) as resp:
             return resp.status, json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         try:
@@ -175,10 +291,12 @@ def api_post_json(url, payload, headers):
         raise RuntimeError(f"network error: {e.reason}")
 
 
-def api_get_json(url, headers):
+def api_get_json(url, headers, log_proxy=False):
+    purl, _ = _pick_proxy(log=log_proxy)
     if HAS_CFFI:
         try:
-            r = _cffi_session().get(url, headers=headers, timeout=TIMEOUT)
+            r = _cffi_session().get(url, headers=headers, timeout=TIMEOUT,
+                                    proxy=purl)
             try:
                 data = r.json()
             except Exception:
@@ -192,7 +310,7 @@ def api_get_json(url, headers):
             raise RuntimeError(f"network error: {e}")
     req = urllib.request.Request(url, headers=headers, method="GET")
     try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+        with _urllib_open(req, purl) as resp:
             return resp.status, json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         try:
@@ -202,6 +320,7 @@ def api_get_json(url, headers):
         raise RuntimeError(f"HTTP {e.code} {e.reason} {detail}".strip())
     except urllib.error.URLError as e:
         raise RuntimeError(f"network error: {e.reason}")
+
 
 
 def _safe_name(text, fallback):
@@ -224,14 +343,16 @@ def api_get_bytes(url, referer):
         "Sec-Fetch-Mode": "no-cors",
         "Sec-Fetch-Site": "same-origin",
     }
+    purl, _ = _pick_proxy()
     if HAS_CFFI:
-        r = _cffi_session().get(url, headers=headers, timeout=TIMEOUT)
+        r = _cffi_session().get(url, headers=headers, timeout=TIMEOUT, proxy=purl)
         if r.status_code >= 400:
             raise RuntimeError(f"HTTP {r.status_code} for {url}")
         return r.content
     req = urllib.request.Request(url, headers=headers, method="GET")
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+    with _urllib_open(req, purl) as resp:
         return resp.read()
+
 
 
 def download_photo(teacher, images_dir, session_id):
