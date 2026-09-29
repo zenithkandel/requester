@@ -98,6 +98,51 @@ if ($BLOCK_PRIVATE) {
     }
 }
 
+function pool_proxy_file() { return __DIR__ . '/proxy.json'; }
+function pool_curl_type($t) {
+    switch (strtolower((string)$t)) {
+        case 'https': return defined('CURLPROXY_HTTPS') ? CURLPROXY_HTTPS : CURLPROXY_HTTP;
+        case 'socks4': return CURLPROXY_SOCKS4;
+        case 'socks5': return CURLPROXY_SOCKS5_HOSTNAME;
+        default: return CURLPROXY_HTTP;
+    }
+}
+// Pick a random proxy among the least-used ones, bump its `used` counter.
+// Returns [entry|null, warning|null]. Credentials never leave this file.
+function pool_pick_least_used() {
+    $f = pool_proxy_file();
+    if (!file_exists($f)) return [null, 'pool empty — add proxies first'];
+    $fp = @fopen($f, 'c+');
+    if (!$fp) return [null, 'cannot open proxy.json'];
+    if (!flock($fp, LOCK_EX)) { fclose($fp); return [null, 'cannot lock proxy.json']; }
+    $raw = stream_get_contents($fp);
+    $d = json_decode($raw ?: '', true);
+    $list = (is_array($d) && isset($d['proxies']) && is_array($d['proxies'])) ? array_values($d['proxies']) : [];
+    $valid = [];
+    foreach ($list as $e) {
+        if (!is_array($e) || empty($e['host']) || empty($e['port'])) continue;
+        $e['used'] = (int)($e['used'] ?? 0);
+        $valid[] = $e;
+    }
+    if (!$valid) { flock($fp, LOCK_UN); fclose($fp); return [null, 'pool empty — add proxies first']; }
+    $min = min(array_column($valid, 'used'));
+    $cands = array_values(array_filter($valid, function ($e) use ($min) { return $e['used'] === $min; }));
+    $pick = $cands[random_int(0, count($cands) - 1)];
+    foreach ($list as &$e) {
+        if (is_array($e) && ($e['id'] ?? null) === $pick['id']) {
+            $e['used'] = ((int)($e['used'] ?? 0)) + 1;
+            $e['last_used'] = gmdate('c');
+            $pick = $e;
+            break;
+        }
+    }
+    unset($e);
+    ftruncate($fp, 0); rewind($fp);
+    fwrite($fp, json_encode(['proxies' => array_values($list)], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    fflush($fp); flock($fp, LOCK_UN); fclose($fp);
+    return [$pick, null];
+}
+
 if (!function_exists('curl_init')) {
     http_response_code(500);
     echo json_encode(['error' => 'PHP cURL extension is not enabled. Enable php_curl in XAMPP.']);
@@ -132,6 +177,22 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 curl_setopt($ch, CURLOPT_ENCODING, '');            // accept gzip/deflate, auto-decode
 
+// --- Outbound proxy pool (proxy.json, least-used first) ---
+$proxyUsed = null; $proxyWarning = null;
+if (!empty($data['use_pool'])) {
+    [$poolEntry, $poolWarn] = pool_pick_least_used();
+    if ($poolEntry) {
+        curl_setopt($ch, CURLOPT_PROXY, $poolEntry['host'] . ':' . $poolEntry['port']);
+        curl_setopt($ch, CURLOPT_PROXYTYPE, pool_curl_type($poolEntry['type'] ?? 'http'));
+        if (!empty($poolEntry['user']))
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $poolEntry['user'] . ':' . ($poolEntry['pass'] ?? ''));
+        $proxyUsed = ['id' => $poolEntry['id'] ?? null, 'type' => $poolEntry['type'] ?? 'http',
+            'host' => $poolEntry['host'], 'port' => (int)$poolEntry['port'], 'used' => (int)($poolEntry['used'] ?? 0)];
+    } else {
+        $proxyWarning = $poolWarn ?: 'proxy pool unavailable';
+    }
+}
+
 if ($body !== null && $body !== '' && in_array($method, ['POST','PUT','PATCH','DELETE','OPTIONS'], true)) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, (string)$body);
 } elseif ($method === 'HEAD') {
@@ -144,7 +205,7 @@ $elapsedMs = (int)round((microtime(true) - $start) * 1000);
 
 if ($rawResp === false) {
     http_response_code(502);
-    echo json_encode(['error' => 'Upstream request failed: ' . curl_error($ch), 'url' => $url]);
+    echo json_encode(['error' => 'Upstream request failed: ' . curl_error($ch), 'url' => $url, 'proxy_used' => $proxyUsed]);
     curl_close($ch);
     exit;
 }
@@ -200,4 +261,6 @@ echo json_encode([
     'isBase64'   => $isBase64,
     'time_ms'    => $elapsedMs,
     'via'        => 'php-proxy',
+    'proxy_used' => $proxyUsed,
+    'proxy_warning' => $proxyWarning,
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

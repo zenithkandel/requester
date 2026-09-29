@@ -214,6 +214,20 @@
   .chrome-tab.active .tab-rename{background:#fff;color:#0a0a0a;border-color:#fff}
   .side-foot{padding:10px 16px;border-top:1px solid var(--border);font-size:10.5px;color:var(--text-3);font-family:var(--mono)}
 
+  /* proxy pool */
+  .pool-import-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+  textarea.code.pool-box{min-height:96px}
+  .pool-list-head{display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px}
+  .pool-list-actions{display:flex;gap:2px}
+  .pool-list{display:flex;flex-direction:column;gap:6px}
+  .pool-item{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:10px;padding:8px 6px 8px 12px;font-family:var(--mono);font-size:12px;background:#fff}
+  .pool-item:hover{border-color:var(--text-2)}
+  .pool-item .t{min-width:56px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.04em;padding:3px 7px;border-radius:6px;background:#0a0a0a;color:#fff;flex-shrink:0}
+  .pool-item .t.socks{background:#fff;color:#0a0a0a;border:1px solid #0a0a0a}
+  .pool-item .h{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+  .pool-item .h small{color:var(--text-3)}
+  .pool-item .u{font-size:10.5px;color:var(--text-2);border:1px solid var(--border);background:var(--bg-soft);padding:3px 9px;border-radius:999px;white-space:nowrap;flex-shrink:0}
+
   /* import modal */
   .overlay{position:fixed;inset:0;background:rgba(10,10,10,.45);backdrop-filter:blur(4px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
   .overlay.open{display:flex}
@@ -433,6 +447,45 @@
     </section>
   </main>
 
+  <!-- PROXY POOL -->
+  <section class="card history" id="poolCard">
+    <div class="card-head">
+      <h2>Proxy pool</h2>
+      <span class="hint" id="poolCount">0 proxies</span>
+    </div>
+    <div class="card-body">
+      <div class="proxy-row" style="margin-top:0;margin-bottom:12px">
+        <div class="proxy-left">
+          <label class="switch"><input type="checkbox" id="poolToggle"><span class="track"></span></label>
+          <div><b>Use random proxy</b> <small>· least-used first, via proxy.php</small></div>
+        </div>
+        <span class="proxy-status" id="poolStatus">off</span>
+      </div>
+      <p class="label">Import — txt or json</p>
+      <div class="pool-import-row">
+        <select class="pill-select" id="poolFormat">
+          <option value="auto">Auto</option>
+          <option value="txt">TXT</option>
+          <option value="json">JSON</option>
+        </select>
+        <label class="btn btn-sm" for="poolFile" style="cursor:pointer">Choose file</label>
+        <input type="file" id="poolFile" accept=".txt,.json,.text,.list" hidden />
+        <button class="btn btn-sm btn-dark" id="poolAddBtn">Add to pool</button>
+      </div>
+      <textarea class="code pool-box" id="poolInput" placeholder="http://user:pass@1.2.3.4:8080&#10;socks5://5.6.7.8:1080&#10;9.9.9.9:3128" spellcheck="false"></textarea>
+      <div class="modal-err" id="poolErr"></div>
+      <div class="pool-list-head">
+        <p class="label" style="margin:0">Saved in proxy.json</p>
+        <div class="pool-list-actions">
+          <button class="btn btn-sm btn-ghost" id="poolResetUsage" title="Reset all used counters">Reset usage</button>
+          <button class="btn btn-sm btn-ghost" id="poolClear">Clear</button>
+          <button class="btn btn-sm btn-ghost" id="poolRefresh" title="Reload list">↻</button>
+        </div>
+      </div>
+      <div class="pool-list" id="poolList"></div>
+    </div>
+  </section>
+
   <!-- HISTORY -->
   <section class="card history">
     <div class="card-head">
@@ -610,7 +663,7 @@
     el.addEventListener("input",()=>{save(); if(el===bodyEl)validateJson();});
     el.addEventListener("change",()=>{save(); if(el===bodyEl)validateJson();});
   });
-  proxyToggle.addEventListener("change",()=>{syncProxyUI();save();});
+  proxyToggle.addEventListener("change",()=>{syncProxyUI();if(typeof syncPoolUI==="function")syncPoolUI();save();});
   function syncProxyUI(){
     const on=proxyToggle.checked;
     proxyStatus.textContent=on?"via proxy.php":"direct";
@@ -708,7 +761,7 @@
       if(viaProxy){
         // ---- PHP proxy path: no CORS, no mixed-content issues ----
         // Try POST first, fall back to GET transport if server blocks POST (e.g. 405).
-        const payload={url:finalUrl,method:methodEl.value,headers,body:body||null};
+        const payload={url:finalUrl,method:methodEl.value,headers,body:body||null,use_pool:(typeof poolToggle!=="undefined"&&poolToggle.checked)};
         let data=null, ms=0, usedGet=false;
         const postRes=await fetch("proxy.php",{
           method:"POST",
@@ -751,8 +804,11 @@
         const hObj=data.headers||{};
         const ct=hObj["content-type"]||hObj["Content-Type"]||"";
         renderFromData(data.status, data.statusText||"", hObj, text, data.time_ms??ms, ms, ct, true);
+        if(data.proxy_used){const pu=data.proxy_used;$("respMeta").innerHTML+=`<span class="meta-item" title="Outbound proxy from proxy.json">proxy ${esc(pu.host)}:${esc(String(pu.port))} · used ${pu.used}</span>`;}
+        if(data.proxy_warning){$("respMeta").innerHTML+=`<span class="meta-item" title="${esc(data.proxy_warning)}">pool: sent direct</span>`;}
         pushHistory(methodEl.value,finalUrl,data.status,ms);
         $("respHint").textContent=ms+" ms · proxy"+(usedGet?" · get":"");
+        if(typeof loadPool==="function")loadPool(true);
       }else{
         const res=await fetch(finalUrl,{method:methodEl.value,headers,body,signal:controller.signal});
         const ms=Math.round(performance.now()-started);
@@ -877,6 +933,102 @@
     });
   }
   $("clearHistory").onclick=()=>{localStorage.removeItem(LS_HIST);renderHistory();};
+
+  /* ---------- proxy pool (proxy.json via proxies.php) ---------- */
+  const LS_POOL = "minimal-request-use-pool-v1";
+  const poolToggle=$("poolToggle"), poolStatus=$("poolStatus");
+  try{poolToggle.checked=localStorage.getItem(LS_POOL)==="1";}catch{}
+  function syncPoolUI(){
+    const on=poolToggle.checked;
+    poolStatus.textContent=on?"random on":"off";
+    poolStatus.classList.toggle("on",on);
+    poolStatus.title=on?(proxyToggle.checked?"Pool active — least-used proxy per request":"Pool armed — enable PHP proxy to use it"):"";
+  }
+  poolToggle.addEventListener("change",()=>{try{localStorage.setItem(LS_POOL,poolToggle.checked?"1":"0");}catch{}syncPoolUI();});
+  function poolErr(m){const e=$("poolErr");if(!m){e.style.display="none";e.textContent="";return;}e.textContent=m;e.style.display="block";}
+  async function loadPool(silent){
+    try{
+      const r=await fetch("proxies.php?action=list");
+      const d=await r.json();
+      if(!d||!Array.isArray(d.proxies))throw new Error("bad response");
+      renderPool(d.proxies);
+    }catch(e){
+      if(!silent)poolErr("proxies.php unreachable — open the tool via http://localhost, not file://");
+      renderPool(null);
+    }
+  }
+  function renderPool(list){
+    const el=$("poolList");
+    if(list===null){el.innerHTML=`<div class="history-empty">Pool status unknown.</div>`;$("poolCount").textContent="—";return;}
+    $("poolCount").textContent=list.length+(list.length===1?" proxy":" proxies");
+    if(!list.length){el.innerHTML=`<div class="history-empty">Empty — paste proxies above or choose a .txt / .json file.</div>`;return;}
+    el.innerHTML="";
+    [...list].sort((a,b)=>(a.used||0)-(b.used||0)).forEach(p=>{
+      const d=document.createElement("div");d.className="pool-item";
+      const isSocks=/socks/i.test(p.type||"");
+      const auth=p.user?` <small>· ${esc(p.user)}${p.has_pass?":•••":""}</small>`:"";
+      const badge=document.createElement("span");badge.className="t"+(isSocks?" socks":"");badge.textContent=(p.type||"http").toUpperCase();
+      const h=document.createElement("span");h.className="h";
+      h.innerHTML=`${esc(p.host)}:${esc(String(p.port))}${auth}`;
+      const u=document.createElement("span");u.className="u";u.textContent="used: "+(p.used||0);
+      if(p.last_used)u.title="last used "+p.last_used;
+      const x=document.createElement("button");x.className="icon-btn";x.title="Remove";x.textContent="×";
+      x.style.width="28px";x.style.height="28px";
+      x.onclick=()=>poolDelete(p.id);
+      d.appendChild(badge);d.appendChild(h);d.appendChild(u);d.appendChild(x);
+      el.appendChild(d);
+    });
+  }
+  async function poolImport(format,data){
+    try{
+      const r=await fetch("proxies.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"import",format,data})});
+      const raw=await r.text();
+      let d=null;try{d=JSON.parse(raw);}catch{d=null;}
+      if(!d)throw new Error("proxies.php returned non-JSON (status "+r.status+"): "+raw.slice(0,200));
+      if(d.error)throw new Error(d.error);
+      renderPool(d.proxies||[]);
+      $("poolInput").value="";
+      toast("Added "+(d.added||0)+((d.skipped)?" · skipped "+d.skipped:""));
+      if(d.errors&&d.errors.length)poolErr("Some lines skipped:\n"+d.errors.slice(0,5).join("\n"));
+    }catch(e){poolErr(String((e&&e.message)||e));}
+  }
+  $("poolAddBtn").onclick=()=>{
+    const data=$("poolInput").value;
+    if(!data.trim()){poolErr("Paste proxies or choose a file first.");return;}
+    poolErr(null);
+    poolImport($("poolFormat").value,data);
+  };
+  $("poolFile").addEventListener("change",e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      $("poolInput").value=String(rd.result||"");
+      if(/\.json$/i.test(f.name))$("poolFormat").value="json";
+      else if(/\.(txt|text|list)$/i.test(f.name))$("poolFormat").value="txt";
+      toast("File loaded — hit Add to pool");
+    };
+    rd.readAsText(f);e.target.value="";
+  });
+  async function poolDelete(id){
+    try{
+      const r=await fetch("proxies.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id})});
+      const d=await r.json();renderPool(d.proxies||[]);
+    }catch(e){poolErr(String((e&&e.message)||e));}
+  }
+  $("poolClear").onclick=async()=>{
+    if(!confirm("Remove ALL proxies from proxy.json?"))return;
+    try{
+      const r=await fetch("proxies.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"clear"})});
+      const d=await r.json();renderPool(d.proxies||[]);toast("Pool cleared");
+    }catch(e){poolErr(String((e&&e.message)||e));}
+  };
+  $("poolResetUsage").onclick=async()=>{
+    try{
+      const r=await fetch("proxies.php",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"reset_usage"})});
+      const d=await r.json();renderPool(d.proxies||[]);toast("Usage reset");
+    }catch(e){poolErr(String((e&&e.message)||e));}
+  };
+  $("poolRefresh").onclick=()=>loadPool();
 
   /* ---------- import from fetch() ---------- */
   const importOverlay=$("importOverlay"), importCode=$("importCode"), importErr=$("importErr");
@@ -1131,7 +1283,7 @@
   loadTabs();
   applySnapshot((activeTab()&&activeTab().snapshot)||blankSnapshot(),false);
   try{localStorage.setItem(LS_KEY,JSON.stringify(collect()));}catch{}
-  renderTabs(); renderHistory(); syncProxyUI(); updateCounts(); validateJson();
+  renderTabs(); renderHistory(); syncProxyUI(); syncPoolUI(); loadPool(true); updateCounts(); validateJson();
 })();
 </script>
 </body>
