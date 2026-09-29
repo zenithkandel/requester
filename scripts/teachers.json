@@ -1,0 +1,1409 @@
+{
+  "evaluation_session_id": "12",
+  "fetched_at": "2026-09-29T10:04:51.130659+00:00",
+  "accounts_total": 34,
+  "accounts_ok": 25,
+  "teacher_count": 86,
+  "images_dir": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images",
+  "images_downloaded": 86,
+  "images_failed": 0,
+  "accounts": [
+    {
+      "identity": "8241750",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241751",
+      "ok": true,
+      "teacher_count": 12,
+      "error": null
+    },
+    {
+      "identity": "8241752",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241753",
+      "ok": true,
+      "teacher_count": 12,
+      "error": null
+    },
+    {
+      "identity": "8241754",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241755",
+      "ok": false,
+      "teacher_count": 0,
+      "error": "HTTP 400  {\"message\":\"Invalid identity or password\",\"errors\":null}  [url: https://es.schoolsie.com/api/v1/publics/user/login]"
+    },
+    {
+      "identity": "8241756",
+      "ok": true,
+      "teacher_count": 12,
+      "error": null
+    },
+    {
+      "identity": "8241757",
+      "ok": true,
+      "teacher_count": 12,
+      "error": null
+    },
+    {
+      "identity": "8241758",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241759",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241760",
+      "ok": false,
+      "teacher_count": 0,
+      "error": "HTTP 400  {\"message\":\"Invalid identity or password\",\"errors\":null}  [url: https://es.schoolsie.com/api/v1/publics/user/login]"
+    },
+    {
+      "identity": "8241761",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241762",
+      "ok": false,
+      "teacher_count": 0,
+      "error": "HTTP 400  {\"message\":\"Invalid identity or password\",\"errors\":null}  [url: https://es.schoolsie.com/api/v1/publics/user/login]"
+    },
+    {
+      "identity": "8241763",
+      "ok": false,
+      "teacher_count": 0,
+      "error": "HTTP 400  {\"message\":\"Invalid identity or password\",\"errors\":null}  [url: https://es.schoolsie.com/api/v1/publics/user/login]"
+    },
+    {
+      "identity": "8241764",
+      "ok": true,
+      "teacher_count": 12,
+      "error": null
+    },
+    {
+      "identity": "8241765",
+      "ok": true,
+      "teacher_count": 15,
+      "error": null
+    },
+    {
+      "identity": "8241766",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241767",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241768",
+      "ok": true,
+      "teacher_count": 12,
+      "error": null
+    },
+    {
+      "identity": "8241769",
+      "ok": false,
+      "teacher_count": 0,
+      "error": "HTTP 400  {\"message\":\"Invalid identity or password\",\"errors\":null}  [url: https://es.schoolsie.com/api/v1/publics/user/login]"
+    },
+    {
+      "identity": "8241770",
+      "ok": true,
+      "teacher_count": 15,
+      "error": null
+    },
+    {
+      "identity": "8241771",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241772",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241773",
+      "ok": false,
+      "teacher_count": 0,
+      "error": "HTTP 400  {\"message\":\"Invalid identity or password\",\"errors\":null}  [url: https://es.schoolsie.com/api/v1/publics/user/login]"
+    },
+    {
+      "identity": "8241774",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241775",
+      "ok": false,
+      "teacher_count": 0,
+      "error": "HTTP 400  {\"message\":\"Invalid identity or password\",\"errors\":null}  [url: https://es.schoolsie.com/api/v1/publics/user/login]"
+    },
+    {
+      "identity": "8241776",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241777",
+      "ok": false,
+      "teacher_count": 0,
+      "error": "HTTP 400  {\"message\":\"Invalid identity or password\",\"errors\":null}  [url: https://es.schoolsie.com/api/v1/publics/user/login]"
+    },
+    {
+      "identity": "8241778",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241779",
+      "ok": true,
+      "teacher_count": 12,
+      "error": null
+    },
+    {
+      "identity": "8241780",
+      "ok": false,
+      "teacher_count": 0,
+      "error": "HTTP 400  {\"message\":\"Invalid identity or password\",\"errors\":null}  [url: https://es.schoolsie.com/api/v1/publics/user/login]"
+    },
+    {
+      "identity": "8241781",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241782",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    },
+    {
+      "identity": "8241783",
+      "ok": true,
+      "teacher_count": 16,
+      "error": null
+    }
+  ],
+  "teachers": [
+    {
+      "staff_id": 159,
+      "staff_name": "PRAKASH THAPA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803111927_PT_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 110399,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\159_PRAKASH_THAPA.jpg"
+    },
+    {
+      "staff_id": 173,
+      "staff_name": "MANJU NEUPANE",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20250817062017_KMSS_favicon.png",
+      "subject_division_ids": [
+        21
+      ],
+      "subject_division_name": "BOTANY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 111171,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\173_MANJU_NEUPANE.png"
+    },
+    {
+      "staff_id": 184,
+      "staff_name": "PRAKASH GODAR",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804060712_PRAKASH_GODAR_result.jpg",
+      "subject_division_ids": [
+        21
+      ],
+      "subject_division_name": "BOTANY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 110444,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\184_PRAKASH_GODAR.jpg"
+    },
+    {
+      "staff_id": 188,
+      "staff_name": "BIJAY DHAKAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260817085246_bijay_Dhakall_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 110545,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\188_BIJAY_DHAKAL.jpg"
+    },
+    {
+      "staff_id": 200,
+      "staff_name": "KINTU DULAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804054229_KD_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 110637,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\200_KINTU_DULAL.jpg"
+    },
+    {
+      "staff_id": 205,
+      "staff_name": "RAJNISH ADHIKARI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804055818_RAJNISH_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 110711,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\205_RAJNISH_ADHIKARI.jpg"
+    },
+    {
+      "staff_id": 233,
+      "staff_name": "CHIRANJIVI GYAWALI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031095055_chiranjivi_gyawali.JPG",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "COMPLETED",
+      "submission_id": 110801,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\233_CHIRANJIVI_GYAWALI.JPG"
+    },
+    {
+      "staff_id": 234,
+      "staff_name": "CHUDA P POKHREL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804025214_cpp_result.jpg",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "COMPLETED",
+      "submission_id": 110857,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\234_CHUDA_P_POKHREL.jpg"
+    },
+    {
+      "staff_id": 242,
+      "staff_name": "SAROJ GYANWALI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031094705_Saroj_Gywali.JPG",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 110898,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\242_SAROJ_GYANWALI.JPG"
+    },
+    {
+      "staff_id": 255,
+      "staff_name": "SAMINA GAUTAM BUDHATHOKI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031095205_Samina_Gautam.JPG",
+      "subject_division_ids": [
+        7
+      ],
+      "subject_division_name": "NEPALI",
+      "subject_name": "NEPALI",
+      "status": "COMPLETED",
+      "submission_id": 111106,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\255_SAMINA_GAUTAM_BUDHATHOKI.JPG"
+    },
+    {
+      "staff_id": 270,
+      "staff_name": "YUBRAJ ARYAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804052812_YA_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 111261,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\270_YUBRAJ_ARYAL.jpg"
+    },
+    {
+      "staff_id": 280,
+      "staff_name": "TRAILOKYA NATH JOSHI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031095657_Trailokya_nath_joshi.JPG",
+      "subject_division_ids": [
+        20
+      ],
+      "subject_division_name": "ZOOLOGY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 111353,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\280_TRAILOKYA_NATH_JOSHI.JPG"
+    },
+    {
+      "staff_id": 302,
+      "staff_name": "SUCHITRA SHRESTHA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260807082511_DSC_3928_copy_result.jpg",
+      "subject_division_ids": [
+        20
+      ],
+      "subject_division_name": "ZOOLOGY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 111405,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\302_SUCHITRA_SHRESTHA.jpg"
+    },
+    {
+      "staff_id": 303,
+      "staff_name": "JIT B BASNET",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804032437_DSC_3963_copy_result.jpg",
+      "subject_division_ids": [
+        8
+      ],
+      "subject_division_name": "ENGLISH",
+      "subject_name": "ENGLISH",
+      "status": "COMPLETED",
+      "submission_id": 111463,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\303_JIT_B_BASNET.jpg"
+    },
+    {
+      "staff_id": 307,
+      "staff_name": "KHAGENDRA CHAPAIN",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804054818_DSC_3925_copy_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 111499,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\307_KHAGENDRA_CHAPAIN.jpg"
+    },
+    {
+      "staff_id": 434,
+      "staff_name": "RITA KOJU",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260610033140_Rita_Koju.jpg",
+      "subject_division_ids": [
+        21
+      ],
+      "subject_division_name": "BOTANY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 111557,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\434_RITA_KOJU.jpg"
+    },
+    {
+      "staff_id": 166,
+      "staff_name": "KABINDRA SUBEDI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260805062839_KS_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 133772,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\166_KABINDRA_SUBEDI.jpg"
+    },
+    {
+      "staff_id": 172,
+      "staff_name": "TANKA RAJ DAHAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803103647_TRD_result.jpg",
+      "subject_division_ids": [
+        8
+      ],
+      "subject_division_name": "ENGLISH",
+      "subject_name": "ENGLISH",
+      "status": "COMPLETED",
+      "submission_id": 133841,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\172_TANKA_RAJ_DAHAL.jpg"
+    },
+    {
+      "staff_id": 195,
+      "staff_name": "RAVI BHUSHAN SHARMA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031100705_Ravi_Bhushan_Sharma.JPG",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 133877,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\195_RAVI_BHUSHAN_SHARMA.JPG"
+    },
+    {
+      "staff_id": 201,
+      "staff_name": "NILIMA SINGH",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804054336_nilima_singh_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 133900,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\201_NILIMA_SINGH.jpg"
+    },
+    {
+      "staff_id": 209,
+      "staff_name": "REWATI KHANAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804021846_DSC_3989_copy_result.jpg",
+      "subject_division_ids": [
+        23,
+        37
+      ],
+      "subject_division_name": "MATHEMATICS, PHYSICS",
+      "subject_name": "MATHEMATICS, PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 133959,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\209_REWATI_KHANAL.jpg"
+    },
+    {
+      "staff_id": 229,
+      "staff_name": "SUMAN GAHIRE",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803092136_1_(423)_copy_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 133983,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\229_SUMAN_GAHIRE.jpg"
+    },
+    {
+      "staff_id": 257,
+      "staff_name": "SAROJ POUDEL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804061300_DSC_4032_copy_result.jpg",
+      "subject_division_ids": [
+        14
+      ],
+      "subject_division_name": "COMPUTER SCIENCE",
+      "subject_name": "COMPUTER SCIENCE ",
+      "status": "COMPLETED",
+      "submission_id": 133997,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\257_SAROJ_POUDEL.jpg"
+    },
+    {
+      "staff_id": 262,
+      "staff_name": "SHANKAR PURI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031095734_Shankar_Puri.JPG",
+      "subject_division_ids": [
+        7
+      ],
+      "subject_division_name": "NEPALI",
+      "subject_name": "NEPALI",
+      "status": "COMPLETED",
+      "submission_id": 134028,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\262_SHANKAR_PURI.JPG"
+    },
+    {
+      "staff_id": 271,
+      "staff_name": "CHETAN POUDEL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260806082650_DSC_3923_copy_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 134094,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\271_CHETAN_POUDEL.jpg"
+    },
+    {
+      "staff_id": 299,
+      "staff_name": "ASHOK BADAILA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031094607_Ashok_Badaila_-_Mth.jpg",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "COMPLETED",
+      "submission_id": 134085,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\299_ASHOK_BADAILA.jpg"
+    },
+    {
+      "staff_id": 305,
+      "staff_name": "DHRUBA POUDEL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031094356_Dhruba_Poudel__[_Phy].jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 134067,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\305_DHRUBA_POUDEL.jpg"
+    },
+    {
+      "staff_id": 363,
+      "staff_name": "ROHIT RIJAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804032735_rohit_rijal_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 134049,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\363_ROHIT_RIJAL.jpg"
+    },
+    {
+      "staff_id": 132,
+      "staff_name": "BISHNU P PANTHI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804045737_Bishnu_p_panthee_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 110463,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\132_BISHNU_P_PANTHI.jpg"
+    },
+    {
+      "staff_id": 154,
+      "staff_name": "DURGA DATTA ADHIKARI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803100744_DDA_result.jpg",
+      "subject_division_ids": [
+        7
+      ],
+      "subject_division_name": "NEPALI",
+      "subject_name": "NEPALI",
+      "status": "COMPLETED",
+      "submission_id": 110618,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\154_DURGA_DATTA_ADHIKARI.jpg"
+    },
+    {
+      "staff_id": 162,
+      "staff_name": "UTTAM RAJ BHUSAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803100609_Urbsir_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 110813,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\162_UTTAM_RAJ_BHUSAL.jpg"
+    },
+    {
+      "staff_id": 194,
+      "staff_name": "PRAKASH PAUDEL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804015916_PP_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 111200,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\194_PRAKASH_PAUDEL.jpg"
+    },
+    {
+      "staff_id": 222,
+      "staff_name": "MINARVA SHRESTHA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260807031212_DSC_3887_copy_result.jpg",
+      "subject_division_ids": [
+        8
+      ],
+      "subject_division_name": "ENGLISH",
+      "subject_name": "ENGLISH",
+      "status": "COMPLETED",
+      "submission_id": 111587,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\222_MINARVA_SHRESTHA.jpg"
+    },
+    {
+      "staff_id": 263,
+      "staff_name": "SARADA PAUDEL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260811040645_DSC_3898_copy_result.jpg",
+      "subject_division_ids": [
+        20
+      ],
+      "subject_division_name": "ZOOLOGY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 111860,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\263_SARADA_PAUDEL.jpg"
+    },
+    {
+      "staff_id": 274,
+      "staff_name": "SHIVA BHANDARI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804032826_DSC_3916_copy_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 112059,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\274_SHIVA_BHANDARI.jpg"
+    },
+    {
+      "staff_id": 279,
+      "staff_name": "SURAJ BABU GHIMIRE",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260807031841_DSC_3894_copy_result.jpg",
+      "subject_division_ids": [
+        20
+      ],
+      "subject_division_name": "ZOOLOGY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 112133,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\279_SURAJ_BABU_GHIMIRE.jpg"
+    },
+    {
+      "staff_id": 301,
+      "staff_name": "SUMITRA DAHAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260813052531_DSC_3932_copy_result.jpg",
+      "subject_division_ids": [
+        21
+      ],
+      "subject_division_name": "BOTANY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 112305,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\301_SUMITRA_DAHAL.jpg"
+    },
+    {
+      "staff_id": 447,
+      "staff_name": "MANJU NEUPANE",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804015624_manju_neupane_result.jpg",
+      "subject_division_ids": [
+        21
+      ],
+      "subject_division_name": "BOTANY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 112415,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\447_MANJU_NEUPANE.jpg"
+    },
+    {
+      "staff_id": 153,
+      "staff_name": "AMRIT PANTHI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260807073448_AP_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 134481,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\153_AMRIT_PANTHI.jpg"
+    },
+    {
+      "staff_id": 164,
+      "staff_name": "MUKHTAR ALAM",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260929034817_DSC_3991_copy_result.jpg",
+      "subject_division_ids": [
+        8
+      ],
+      "subject_division_name": "ENGLISH",
+      "subject_name": "ENGLISH",
+      "status": "COMPLETED",
+      "submission_id": 134536,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\164_MUKHTAR_ALAM.jpg"
+    },
+    {
+      "staff_id": 483,
+      "staff_name": "SANJAY GOPAL SHRESTHA ",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804025518_SANJAY_GOPAL_STHA_result.jpg",
+      "subject_division_ids": [
+        14
+      ],
+      "subject_division_name": "COMPUTER SCIENCE",
+      "subject_name": "COMPUTER SCIENCE ",
+      "status": "COMPLETED",
+      "submission_id": 134729,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\483_SANJAY_GOPAL_SHRESTHA.jpg"
+    },
+    {
+      "staff_id": 258,
+      "staff_name": "SANDHYA PATHAK",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031095844_Sandhya_Pathak.jpg",
+      "subject_division_ids": [
+        8
+      ],
+      "subject_division_name": "ENGLISH",
+      "subject_name": "ENGLISH",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\258_SANDHYA_PATHAK.jpg"
+    },
+    {
+      "staff_id": 171,
+      "staff_name": "RICHESH SHARMA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803091320_richu_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 107587,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\171_RICHESH_SHARMA.jpg"
+    },
+    {
+      "staff_id": 438,
+      "staff_name": "PRABIN KUMAR BISHWAS",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260703063005_WhatsApp_Image_2026-07-03_at_12.13.59_PM.jpeg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 107842,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\438_PRABIN_KUMAR_BISHWAS.jpeg"
+    },
+    {
+      "staff_id": 443,
+      "staff_name": "KARUNA BAJRACHARYA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804053321_MONIKA_BAJRACHARYA_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 107853,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\443_KARUNA_BAJRACHARYA.jpg"
+    },
+    {
+      "staff_id": 133,
+      "staff_name": "BISHNU PRASAD PAUDEL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804033654_DSC_3912_copy_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\133_BISHNU_PRASAD_PAUDEL.jpg"
+    },
+    {
+      "staff_id": 180,
+      "staff_name": "PRABIN ADHIKARI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031092515_prabin_adhikari.JPG",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\180_PRABIN_ADHIKARI.JPG"
+    },
+    {
+      "staff_id": 241,
+      "staff_name": "PUSHPA RAJ BHANDARI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803110744_prb_result.jpg",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\241_PUSHPA_RAJ_BHANDARI.jpg"
+    },
+    {
+      "staff_id": 91,
+      "staff_name": "ARJUN THAPA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803105645_DSC_3957_copy_result.jpg",
+      "subject_division_ids": [
+        20
+      ],
+      "subject_division_name": "ZOOLOGY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 124302,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\91_ARJUN_THAPA.jpg"
+    },
+    {
+      "staff_id": 143,
+      "staff_name": "BIDHYA SHRESTHA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031090056_Bidhya_Shrestha.JPG",
+      "subject_division_ids": [
+        21
+      ],
+      "subject_division_name": "BOTANY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 124402,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\143_BIDHYA_SHRESTHA.JPG"
+    },
+    {
+      "staff_id": 155,
+      "staff_name": "LAXMI P CHALISE",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804021118_IMG-20260804-WA0000-Picsart-BackgroundChanger.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 124514,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\155_LAXMI_P_CHALISE.jpg"
+    },
+    {
+      "staff_id": 168,
+      "staff_name": "RAJAN P POKHREL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803112631_RPP_result.jpg",
+      "subject_division_ids": [
+        7
+      ],
+      "subject_division_name": "NEPALI",
+      "subject_name": "NEPALI",
+      "status": "COMPLETED",
+      "submission_id": 124720,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\168_RAJAN_P_POKHREL.jpg"
+    },
+    {
+      "staff_id": 198,
+      "staff_name": "PRAKASH POUDEL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803111232_pp_(2)_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 124814,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\198_PRAKASH_POUDEL.jpg"
+    },
+    {
+      "staff_id": 220,
+      "staff_name": "BIDYA PAUDYAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260814110042_BIDDHYA_POUDL_N_result.jpg",
+      "subject_division_ids": [
+        8
+      ],
+      "subject_division_name": "ENGLISH",
+      "subject_name": "ENGLISH",
+      "status": "COMPLETED",
+      "submission_id": 125084,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\220_BIDYA_PAUDYAL.jpg"
+    },
+    {
+      "staff_id": 227,
+      "staff_name": "SANTOSH BASNET",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031094324_santhosh_basnet.JPG",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "COMPLETED",
+      "submission_id": 125132,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\227_SANTOSH_BASNET.JPG"
+    },
+    {
+      "staff_id": 316,
+      "staff_name": "MANISHA PAUDEL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804054446_manisha_pouderl_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 125291,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\316_MANISHA_PAUDEL.jpg"
+    },
+    {
+      "staff_id": 327,
+      "staff_name": "HEMANTI AIREE",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804110438_HEMANTI_AIREE_result.jpg",
+      "subject_division_ids": [
+        21
+      ],
+      "subject_division_name": "BOTANY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 125219,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\327_HEMANTI_AIREE.jpg"
+    },
+    {
+      "staff_id": 328,
+      "staff_name": "MONIKA MAHARJAN",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804105223_DSC_4014_copy_result.jpg",
+      "subject_division_ids": [
+        20
+      ],
+      "subject_division_name": "ZOOLOGY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 125342,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\328_MONIKA_MAHARJAN.jpg"
+    },
+    {
+      "staff_id": 342,
+      "staff_name": "GANGA SHRESTHA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031092456_Ganga_Shrestha_Ma'am_-_Botany.jpg",
+      "subject_division_ids": [
+        21
+      ],
+      "subject_division_name": "BOTANY",
+      "subject_name": "BIOLOGY",
+      "status": "COMPLETED",
+      "submission_id": 125368,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\342_GANGA_SHRESTHA.jpg"
+    },
+    {
+      "staff_id": 191,
+      "staff_name": "GUNMAN SINGH KC",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031092856_gunman_singh_kc.JPG",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 113629,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\191_GUNMAN_SINGH_KC.JPG"
+    },
+    {
+      "staff_id": 206,
+      "staff_name": "RAJEEV JHA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803091257_rajiv_jha_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 113785,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\206_RAJEEV_JHA.jpg"
+    },
+    {
+      "staff_id": 435,
+      "staff_name": "LAXMAN SITAULA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803090855_DSC_3959copy.JPG",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "COMPLETED",
+      "submission_id": 114608,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\435_LAXMAN_SITAULA.JPG"
+    },
+    {
+      "staff_id": 238,
+      "staff_name": "SHANKAR GYAWALI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031094921_shankar_gyawali.JPG",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "COMPLETED",
+      "submission_id": 139942,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\238_SHANKAR_GYAWALI.JPG"
+    },
+    {
+      "staff_id": 260,
+      "staff_name": "LILA B KUNWAR",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031095812_Lila_Bahadur_Kunwar_(_PHY).jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 139983,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\260_LILA_B_KUNWAR.jpg"
+    },
+    {
+      "staff_id": 346,
+      "staff_name": "NIKESH BISHWOKARMA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803110809_DSC_4049_copy_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 140092,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\346_NIKESH_BISHWOKARMA.jpg"
+    },
+    {
+      "staff_id": 453,
+      "staff_name": "BIKAS ARYAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803105952_Dr._Bikash_aryal_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 140190,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\453_BIKAS_ARYAL.jpg"
+    },
+    {
+      "staff_id": 126,
+      "staff_name": "BHANU NEUPANE",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031090006_bhanu_neupane.JPG",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 115007,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\126_BHANU_NEUPANE.JPG"
+    },
+    {
+      "staff_id": 224,
+      "staff_name": "SUDIP BASNET",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260630110802_20251031094552_Sudip_Basnet.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 115864,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\224_SUDIP_BASNET.jpg"
+    },
+    {
+      "staff_id": 264,
+      "staff_name": "PUSPA LAL TIWARI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260807081137_IMG_3465-Photoroom.png",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\264_PUSPA_LAL_TIWARI.png"
+    },
+    {
+      "staff_id": 214,
+      "staff_name": "SHEKHAR CHANDRA PAUDEL ",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803112415_saudi_result.jpg",
+      "subject_division_ids": [
+        14
+      ],
+      "subject_division_name": "COMPUTER SCIENCE",
+      "subject_name": "COMPUTER SCIENCE ",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\214_SHEKHAR_CHANDRA_PAUDEL.jpg"
+    },
+    {
+      "staff_id": 247,
+      "staff_name": "TARA DATTA BADU",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031095524_Tara_dutta_Badu.JPG",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\247_TARA_DATTA_BADU.JPG"
+    },
+    {
+      "staff_id": 183,
+      "staff_name": "PHANADHAR BHANDARI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031092617_Phanadhar_Bhandari.JPG",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 143142,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\183_PHANADHAR_BHANDARI.JPG"
+    },
+    {
+      "staff_id": 253,
+      "staff_name": "DEVENDRA NEPAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031095352_Devendra_nepal.JPG",
+      "subject_division_ids": [
+        7
+      ],
+      "subject_division_name": "NEPALI",
+      "subject_name": "NEPALI",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\253_DEVENDRA_NEPAL.JPG"
+    },
+    {
+      "staff_id": 259,
+      "staff_name": "GOBARDHAN KHADKA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031100903_Gobardhan_Khadka.JPG",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\259_GOBARDHAN_KHADKA.JPG"
+    },
+    {
+      "staff_id": 282,
+      "staff_name": "KIRAN MAHARJAN",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260923090359_KIRAN_MAJARJAN_result.jpg",
+      "subject_division_ids": [
+        20
+      ],
+      "subject_division_name": "ZOOLOGY",
+      "subject_name": "BIOLOGY",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\282_KIRAN_MAHARJAN.jpg"
+    },
+    {
+      "staff_id": 320,
+      "staff_name": "SABIN ARYAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260805062308_DSC_4056_copy_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\320_SABIN_ARYAL.jpg"
+    },
+    {
+      "staff_id": 387,
+      "staff_name": "GURU DAYAL SHAHU TELI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260203073312_Guru.jpg",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\387_GURU_DAYAL_SHAHU_TELI.jpg"
+    },
+    {
+      "staff_id": 458,
+      "staff_name": "AARATI CHAND",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804110234_DSC_4052_copy_result.jpg",
+      "subject_division_ids": [
+        21
+      ],
+      "subject_division_name": "BOTANY",
+      "subject_name": "BIOLOGY",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\458_AARATI_CHAND.jpg"
+    },
+    {
+      "staff_id": 192,
+      "staff_name": "HARI SILWAL",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031092835_Hari_Silwal.JPG",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 108249,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\192_HARI_SILWAL.JPG"
+    },
+    {
+      "staff_id": 278,
+      "staff_name": "SHALIKRAM TIMALSENA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031095931_shalikram_timalsena.JPG",
+      "subject_division_ids": [
+        37
+      ],
+      "subject_division_name": "MATHEMATICS",
+      "subject_name": "MATHEMATICS",
+      "status": "COMPLETED",
+      "submission_id": 108430,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\278_SHALIKRAM_TIMALSENA.JPG"
+    },
+    {
+      "staff_id": 436,
+      "staff_name": "MADHAV RAJ NEUPANE ",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260619102440_NF-253-HQ.jpg",
+      "subject_division_ids": [
+        22,
+        37
+      ],
+      "subject_division_name": "CHEMISTRY, MATHEMATICS",
+      "subject_name": "CHEMISTRY, MATHEMATICS",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\436_MADHAV_RAJ_NEUPANE.jpg"
+    },
+    {
+      "staff_id": 76,
+      "staff_name": "ASHISH ACHARYA",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804062930_ASHISH_ACHARYA_`_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 138804,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\76_ASHISH_ACHARYA.jpg"
+    },
+    {
+      "staff_id": 98,
+      "staff_name": "BIMALA BHANDARI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260805105453_bb_result.jpg",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 138938,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\98_BIMALA_BHANDARI.jpg"
+    },
+    {
+      "staff_id": 308,
+      "staff_name": "RAM CHANDRA GIRI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260803111805_DSC_3978_copy_result.jpg",
+      "subject_division_ids": [
+        23
+      ],
+      "subject_division_name": "PHYSICS",
+      "subject_name": "PHYSICS",
+      "status": "COMPLETED",
+      "submission_id": 139686,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\308_RAM_CHANDRA_GIRI.jpg"
+    },
+    {
+      "staff_id": 334,
+      "staff_name": "RAJ KUMAR DANI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20251031093028_Raj_kumar_dani.JPG",
+      "subject_division_ids": [
+        22
+      ],
+      "subject_division_name": "CHEMISTRY",
+      "subject_name": "CHEMISTRY",
+      "status": "COMPLETED",
+      "submission_id": 139737,
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\334_RAJ_KUMAR_DANI.JPG"
+    },
+    {
+      "staff_id": 310,
+      "staff_name": "AMBIKA PAUDEL SUBEDI",
+      "staff_code": "",
+      "staff_picture_url": "uploads/20260804110056_DSC_4051_copy_result.jpg",
+      "subject_division_ids": [
+        20
+      ],
+      "subject_division_name": "ZOOLOGY",
+      "subject_name": "BIOLOGY",
+      "status": "PENDING",
+      "local_image_path": "C:\\xampp\\htdocs\\codes\\test\\es.schoolsie\\scripts\\images\\310_AMBIKA_PAUDEL_SUBEDI.jpg"
+    }
+  ]
+}
