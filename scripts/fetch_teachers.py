@@ -9,10 +9,13 @@ For each account in a credentials JSON file:
      -> data.list = [ {staff_id, staff_name, ...}, ... ]
 
 Everything returned about each teacher is saved as-is into one output
-JSON file (deduped by staff_id across accounts).
+JSON file (deduped by staff_id across accounts), and each teacher's
+staff_picture_url photo is downloaded into a local folder (default:
+scripts/images/) with a "<staff_id>_<name>.<ext>" filename.
 
 Usage:
     python fetch_teachers.py users.json -o teachers.json --session 12
+    python fetch_teachers.py users.json --no-images   # skip photo download
 
 users.json formats accepted (any of):
     [{"identity": "8241860", "password": "kmss"}, ...]
@@ -31,6 +34,8 @@ it, it falls back to urllib with full browser headers (often still blocked).
 
 import argparse
 import json
+import os
+import re
 import sys
 import time
 import urllib.error
@@ -199,6 +204,72 @@ def api_get_json(url, headers):
         raise RuntimeError(f"network error: {e.reason}")
 
 
+def _safe_name(text, fallback):
+    """Filesystem-safe version of a teacher name."""
+    cleaned = re.sub(r"[^\w\-. ]+", "", text or "").strip()
+    cleaned = re.sub(r"\s+", "_", cleaned)
+    return cleaned or fallback
+
+
+def api_get_bytes(url, referer):
+    """Binary GET used for photos; returns bytes (empty on failure)."""
+    headers = {
+        "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        "Referer": referer,
+        "User-Agent": CHROME_UA,
+        "Sec-Ch-Ua": _CH_UA,
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": '"Windows"',
+        "Sec-Fetch-Dest": "image",
+        "Sec-Fetch-Mode": "no-cors",
+        "Sec-Fetch-Site": "same-origin",
+    }
+    if HAS_CFFI:
+        r = _cffi_session().get(url, headers=headers, timeout=TIMEOUT)
+        if r.status_code >= 400:
+            raise RuntimeError(f"HTTP {r.status_code} for {url}")
+        return r.content
+    req = urllib.request.Request(url, headers=headers, method="GET")
+    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+        return resp.read()
+
+
+def download_photo(teacher, images_dir, session_id):
+    """Download staff_picture_url into images_dir; return local path or None.
+
+    Relative URLs like "uploads/foo.jpg" are resolved against BASE_URL.
+    Skips files that already exist so re-runs are cheap.
+    """
+    raw_url = str(teacher.get("staff_picture_url") or "").strip()
+    if not raw_url:
+        return None
+    if raw_url.lower().startswith(("http://", "https://")):
+        url = raw_url
+    else:
+        url = f"{BASE_URL}/{raw_url.lstrip('/')}"
+
+    sid = teacher.get("staff_id", teacher.get("id", "unknown"))
+    ext = os.path.splitext(raw_url.split("?")[0])[1] or ".jpg"
+    if ext.lower() not in (".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"):
+        ext = ".jpg"
+    name = _safe_name(str(teacher.get("staff_name") or ""), str(sid))
+    dest = os.path.join(images_dir, f"{sid}_{name}{ext}")
+    if os.path.isfile(dest) and os.path.getsize(dest) > 0:
+        return dest
+
+    referer = f"{BASE_URL}/student/student-survey-list/{session_id}"
+    try:
+        data = api_get_bytes(url, referer)
+    except Exception as e:
+        print(f"    [!] photo failed ({sid}): {e}", flush=True)
+        return None
+    if not data:
+        return None
+    with open(dest, "wb") as f:
+        f.write(data)
+    return dest
+
+
 def login(identity, password):
     """Return the access_token for one account."""
     _, data = api_post_json(
@@ -240,6 +311,12 @@ def main():
     ap.add_argument("users_file", help="credentials JSON (see USAGE at top of file)")
     ap.add_argument("-o", "--output", default="teachers.json", help="output JSON file")
     ap.add_argument("--session", default="12", help="evaluation_session_id (default: 12)")
+    ap.add_argument("--images",
+                    default=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                         "images"),
+                    help="folder for teacher photos (default: scripts/images)")
+    ap.add_argument("--no-images", action="store_true",
+                    help="skip downloading staff photos")
     args = ap.parse_args()
 
     creds = load_credentials(args.users_file)
@@ -256,6 +333,12 @@ def main():
     teachers_by_id = {}   # staff_id -> full teacher object (first seen wins)
     order = []            # staff_ids in first-seen order
     accounts = []
+
+    images_dir = None
+    if not args.no_images:
+        images_dir = args.images
+        os.makedirs(images_dir, exist_ok=True)
+        print(f"[*] photos -> {images_dir}", flush=True)
 
     try:
         for n, (identity, password) in enumerate(creds, 1):
@@ -286,12 +369,29 @@ def main():
     except KeyboardInterrupt:
         print("\n[!] interrupted by user — saving partial results...", flush=True)
 
+    downloaded = failed = 0
+    if images_dir:
+        print(f"[*] downloading photos for {len(order)} teacher(s)...", flush=True)
+        for sid in order:
+            teacher = teachers_by_id[sid]
+            local = download_photo(teacher, images_dir, args.session)
+            if local:
+                teacher["local_image_path"] = local
+                downloaded += 1
+                print(f"    [+] {os.path.basename(local)}", flush=True)
+            elif str(teacher.get("staff_picture_url") or "").strip():
+                failed += 1
+            time.sleep(0.2)
+
     result = {
         "evaluation_session_id": args.session,
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "accounts_total": len(creds),
         "accounts_ok": sum(1 for a in accounts if a["ok"]),
         "teacher_count": len(order),
+        "images_dir": images_dir,
+        "images_downloaded": downloaded,
+        "images_failed": failed,
         "accounts": accounts,
         "teachers": [teachers_by_id[sid] for sid in order],
     }
