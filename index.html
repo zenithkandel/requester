@@ -957,6 +957,9 @@
     const headers=buildHeaders(), body=buildBody();
     const viaProxy=proxyToggle.checked;
     const started=performance.now();
+    const ctrl=new AbortController(); controller=ctrl;
+    let timedOut=false;
+    const to=setTimeout(()=>{timedOut=true; try{ctrl.abort();}catch{}},REQUEST_TIMEOUT_MS);
     $("respError").innerHTML="";
 
     try{
@@ -969,15 +972,14 @@
           method:"POST",
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify(payload),
-          signal:controller.signal
+          signal:ctrl.signal
         });
         const postText=await postRes.text();
         ms=Math.round(performance.now()-started);
         try{ data=JSON.parse(postText); }catch{ data=null; }
-        if(!postRes.ok || !data || data.error && /405|method not allowed/i.test(JSON.stringify(data))){
-          // keep data if it is a valid upstream error; only fallback when transport itself failed
-        }
-        const transportFailed = !data || (!postRes.ok && !data.status);
+        // Only fall back to GET transport when POST produced no JSON at all (e.g. 405 HTML).
+        // A valid JSON error from proxy.php means the call really was attempted — no point redoing it.
+        const transportFailed = !data;
         if(transportFailed){
           // GET fallback: proxy.php?url=...&method=...&headers=...&body_b64=...
           usedGet=true;

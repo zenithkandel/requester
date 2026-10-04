@@ -14,6 +14,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// --- Always answer with JSON, even when PHP dies ---
+// Without this a fatal error / memory blow-up / timeout becomes the host's HTML 502 page,
+// which the client then reports as "proxy.php returned non-JSON".
+@set_time_limit(45);
+register_shutdown_function(function () {
+    $e = error_get_last();
+    if (!$e || !in_array((int)$e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) return;
+    if (headers_sent()) return;
+    http_response_code(500);
+    echo json_encode([
+        'error' => 'PHP fatal error while proxying: ' . (string)$e['message'],
+        'hint'  => 'Usually memory limit exhausted on a big response, or a missing PHP extension (curl/mbstring).',
+    ]);
+});
+
 $data = null;
 
 // --- Transport 2: GET fallback (used when POST is blocked, e.g. 405 from server) ---
@@ -164,24 +179,65 @@ if (is_array($headersIn)) {
     }
 }
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-curl_setopt($ch, CURLOPT_HTTPHEADER, $outHeaders);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, true);            // include response headers in output
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-curl_setopt($ch, CURLOPT_ENCODING, '');            // accept gzip/deflate, auto-decode
-
 // --- Outbound proxy pool (proxy.json, least-used first) ---
-$proxyUsed = null; $proxyWarning = null;
-if (!empty($data['use_pool'])) {
-    [$poolEntry, $poolWarn] = pool_pick_least_used();
+// With the pool on we allow up to 3 tries: free proxies die constantly, and a single dead
+// proxy used to burn the whole timeout so the host killed PHP and served its HTML 502 page.
+$usePool      = !empty($data['use_pool']);
+$maxTries     = $usePool ? 3 : 1;
+$proxyUsed    = null;
+$proxyWarning = null;
+$lastError    = '';
+$done         = false;
+$tooBig       = false;
+$respBody     = '';
+$headerStr    = '';
+$status       = 0;
+$contentType  = null;
+$elapsedMs    = 0;
+
+for ($try = 1; $try <= $maxTries; $try++) {
+    $poolEntry = null;
+    if ($usePool) {
+        [$poolEntry, $poolWarn] = pool_pick_least_used();
+        if (!$poolEntry) {
+            $proxyWarning = $poolWarn ?: 'proxy pool unavailable';
+            $lastError    = $proxyWarning;
+            break;
+        }
+    }
+
+    $respBody = '';
+    $headerStr = '';
+    $tooBig = false;
+
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL             => $url,
+        CURLOPT_CUSTOMREQUEST   => $method,
+        CURLOPT_HTTPHEADER      => $outHeaders,
+        CURLOPT_FOLLOWLOCATION  => true,
+        CURLOPT_MAXREDIRS       => 5,
+        CURLOPT_TIMEOUT         => 20,   // keep well under host gateway timeouts
+        CURLOPT_CONNECTTIMEOUT  => 5,
+        CURLOPT_SSL_VERIFYPEER  => true,
+        CURLOPT_SSL_VERIFYHOST  => 2,
+        CURLOPT_ENCODING        => '',   // accept gzip/deflate, auto-decode
+        CURLOPT_LOW_SPEED_LIMIT => 64,   // kill stalled transfers instead of hanging
+        CURLOPT_LOW_SPEED_TIME  => 8,
+        // Stream instead of RETURNTRANSFER: a multi-MB body used to exhaust memory,
+        // crash the worker and surface as the host's HTML 502 page.
+        CURLOPT_HEADERFUNCTION  => function ($c, $line) use (&$headerStr, &$respBody) {
+            if (preg_match('/^HTTP\/\d/i', $line)) $respBody = ''; // new block (redirect) — drop old body
+            $headerStr .= $line;
+            return strlen($line);
+        },
+        CURLOPT_WRITEFUNCTION   => function ($c, $chunk) use (&$respBody, &$tooBig) {
+            $respBody .= $chunk;
+            if (strlen($respBody) > 4 * 1024 * 1024) { $tooBig = true; return 0; } // abort download
+            return strlen($chunk);
+        },
+    ]);
+
     if ($poolEntry) {
         curl_setopt($ch, CURLOPT_PROXY, $poolEntry['host'] . ':' . $poolEntry['port']);
         curl_setopt($ch, CURLOPT_PROXYTYPE, pool_curl_type($poolEntry['type'] ?? 'http'));
@@ -189,35 +245,43 @@ if (!empty($data['use_pool'])) {
             curl_setopt($ch, CURLOPT_PROXYUSERPWD, $poolEntry['user'] . ':' . ($poolEntry['pass'] ?? ''));
         $proxyUsed = ['id' => $poolEntry['id'] ?? null, 'type' => $poolEntry['type'] ?? 'http',
             'host' => $poolEntry['host'], 'port' => (int)$poolEntry['port'], 'used' => (int)($poolEntry['used'] ?? 0)];
-    } else {
-        $proxyWarning = $poolWarn ?: 'proxy pool unavailable';
     }
-}
 
-if ($body !== null && $body !== '' && in_array($method, ['POST','PUT','PATCH','DELETE','OPTIONS'], true)) {
-    curl_setopt($ch, CURLOPT_POSTFIELDS, (string)$body);
-} elseif ($method === 'HEAD') {
-    curl_setopt($ch, CURLOPT_NOBODY, true);
-}
+    if ($body !== null && $body !== '' && in_array($method, ['POST','PUT','PATCH','DELETE','OPTIONS'], true)) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, (string)$body);
+    } elseif ($method === 'HEAD') {
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+    }
 
-$start = microtime(true);
-$rawResp = curl_exec($ch);
-$elapsedMs = (int)round((microtime(true) - $start) * 1000);
+    $start = microtime(true);
+    $ok = curl_exec($ch);
+    $elapsedMs = (int)round((microtime(true) - $start) * 1000);
 
-if ($rawResp === false) {
-    http_response_code(502);
-    echo json_encode(['error' => 'Upstream request failed: ' . curl_error($ch), 'url' => $url, 'proxy_used' => $proxyUsed]);
+    if ($ok !== false && !$tooBig) {
+        $status      = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $done = true;
+        curl_close($ch);
+        break;
+    }
+
+    $lastError = $tooBig
+        ? 'Upstream response too large (>4MB).'
+        : ('attempt ' . $try . '/' . $maxTries . ' failed: ' . (string)curl_error($ch));
     curl_close($ch);
+}
+
+if (!$done) {
+    http_response_code(502);
+    echo json_encode([
+        'error'         => 'Upstream request failed — ' . ($lastError ?: 'unknown error'),
+        'url'           => $url,
+        'proxy_used'    => $proxyUsed,
+        'proxy_warning' => $proxyWarning,
+        'tries'         => $try - 1,
+    ]);
     exit;
 }
-
-$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-$status     = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-curl_close($ch);
-
-$headerStr = substr($rawResp, 0, $headerSize);
-$respBody  = substr($rawResp, $headerSize);
 
 // If redirects were followed, multiple header blocks are present — keep the last one
 $blocks = preg_split('/\r\n\r\n/', trim($headerStr));
@@ -242,7 +306,10 @@ if ($contentType && !isset($respHeaders['content-type']) && !isset($respHeaders[
 
 // Binary-safe transport: base64 if body is not valid UTF-8 text
 $isBase64 = false;
-if (!mb_check_encoding($respBody, 'UTF-8')) {
+$utf8 = function_exists('mb_check_encoding')
+    ? mb_check_encoding($respBody, 'UTF-8')
+    : (bool)preg_match('//u', $respBody);
+if (!$utf8) {
     $respBody = base64_encode($respBody);
     $isBase64 = true;
 }
