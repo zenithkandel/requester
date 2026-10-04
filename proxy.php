@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['url']) && $_GET['url'] 
         'method'  => isset($_GET['method']) ? (string)$_GET['method'] : 'GET',
         'headers' => $h,
         'body'    => $b,
+        'use_pool' => isset($_GET['use_pool']) && !in_array((string)$_GET['use_pool'], ['', '0', 'false', 'no'], true),
     ];
 }
 

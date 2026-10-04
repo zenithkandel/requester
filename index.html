@@ -202,6 +202,32 @@
   .proxy-status{font-family:var(--mono);font-size:10.5px;padding:3px 9px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--text-3);white-space:nowrap}
   .proxy-status.on{background:#0a0a0a;color:#fff;border-color:#0a0a0a}
 
+  /* repeat / batch */
+  .repeat-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--bg-soft);flex-wrap:wrap}
+  .repeat-left{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2);flex-wrap:wrap}
+  .repeat-left b{color:var(--text);font-weight:600}
+  .repeat-left small{color:var(--text-3);font-family:var(--mono);font-size:11px}
+  #delayWrap{display:none;align-items:center;gap:8px}
+  .num-input{
+    width:80px;font-family:var(--mono);font-size:12.5px;padding:6px 8px;border:1px solid var(--border);
+    border-radius:8px;outline:none;background:#fff;color:var(--text);text-align:center;transition:.15s;
+    -moz-appearance:textfield;appearance:textfield;
+  }
+  .num-input::-webkit-outer-spin-button,.num-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .num-input:focus{border-color:var(--text)}
+  .unit{font-family:var(--mono);font-size:11px;color:var(--text-3)}
+  .batch-\boxed{border:1px solid var(--border);border-radius:10px;background:var(--bg-soft);padding:10px 12px;margin-bottom:14px}
+  .batch-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .batch-head .label{margin:0}
+  .batch-progress{font-family:var(--mono);font-size:11px;color:var(--text-2)}
+  .batch-list{display:flex;flex-direction:column;gap:4px;max-height:236px;overflow:auto}
+  .batch-item{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text-2)}
+  .batch-item .i{color:var(--text-3);min-width:32px}
+  .batch-item .s{font-weight:600;color:var(--text)}
+  .batch-item .s.bad{color:var(--text-3);text-decoration:line-through}
+  .batch-item .px{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-3)}
+  .batch-item .ms{color:var(--text-3);white-space:nowrap}
+
   /* side panel — chrome-like tabs */
   .side{width:272px;flex-shrink:0;position:sticky;top:86px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;display:flex;flex-direction:column;max-height:calc(100vh - 112px);overflow:hidden}
   .side-head{display:flex;align-items:center;justify-content:space-between;padding:14px 12px 10px 16px}
@@ -356,6 +382,8 @@
   html[data-theme="dark"] .switch input:checked + .track::after{background:#0a0a0a}
   html[data-theme="dark"] .proxy-status{background:#161616}
   html[data-theme="dark"] .proxy-status.on{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
+  html[data-theme="dark"] .num-input{background:#161616}
+  html[data-theme="dark"] .batch-item{background:#161616}
   html[data-theme="dark"] #bodyDot{background:#f4f4f4!important;color:#0a0a0a!important;border-color:#f4f4f4!important}
   html[data-theme="dark"] .tab.active .count{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
   html[data-theme="dark"] .status-pill{background:#f4f4f4;border-color:#f4f4f4;color:#0a0a0a}
@@ -439,6 +467,20 @@
           <span class="proxy-status" id="proxyStatus">direct</span>
         </div>
 
+        <div class="repeat-row">
+          <div class="repeat-left">
+            <b>Repeat</b>
+            <input class="num-input" id="repeatCount" type="number" min="1" max="500" step="1" value="1" spellcheck="false" title="How many times to send this request" />
+            <span class="unit">×</span>
+            <span id="delayWrap">
+              <small>delay between</small>
+              <input class="num-input" id="repeatDelay" type="number" min="0" max="60000" step="50" value="0" spellcheck="false" title="Milliseconds to wait between each request" />
+              <span class="unit">ms</span>
+            </span>
+          </div>
+          <span class="proxy-status" id="repeatStatus" title="Send the request this many times">once</span>
+        </div>
+
         <div class="tabs" id="reqTabs">
           <button class="tab active" data-tab="params">Params <span class="count" id="paramsCount">0</span></button>
           <button class="tab" data-tab="headers">Headers <span class="count" id="headersCount">0</span></button>
@@ -496,6 +538,14 @@
         <span class="hint" id="respHint">idle</span>
       </div>
       <div class="card-body">
+        <div class="batch-box" id="batchBox" style="display:none">
+          <div class="batch-head">
+            <p class="label">Batch</p>
+            <span class="batch-progress" id="batchProgress"></span>
+          </div>
+          <div class="batch-list" id="batchList"></div>
+        </div>
+
         <div id="respEmpty" class="resp-empty">
           <div class="ring">←</div>
           <p><strong>No response yet</strong>Configure your request and press Send.</p>
@@ -617,7 +667,8 @@
   const methodEl=$("method"), urlEl=$("url"), bodyEl=$("body"),
         contentTypeEl=$("contentType"), authTypeEl=$("authType"), authValueEl=$("authValue"),
         methodWrap=$("methodWrap"), sendBtn=$("sendBtn"),
-        proxyToggle=$("proxyToggle"), proxyStatus=$("proxyStatus");
+        proxyToggle=$("proxyToggle"), proxyStatus=$("proxyStatus"),
+        repeatCountEl=$("repeatCount"), repeatDelayEl=$("repeatDelay");
 
   /* ---------- tabs ---------- */
   document.querySelectorAll("#reqTabs .tab").forEach(t=>{
@@ -699,7 +750,8 @@
       headers:[...$("headersList").children].map(r=>({key:r.children[0].value,value:r.children[1].value,on:r.children[2].classList.contains("on")})),
       authType:authTypeEl.value, authValue:authValueEl.value,
       contentType:contentTypeEl.value, body:bodyEl.value,
-      useProxy:proxyToggle.checked
+      useProxy:proxyToggle.checked,
+      repeatCount:repeatCountEl.value, repeatDelay:repeatDelayEl.value
     };
   }
   function save(){
@@ -739,9 +791,11 @@
     authTypeEl.value=s.authType||"none"; authValueEl.value=s.authValue||"";
     contentTypeEl.value=s.contentType||"application/json"; bodyEl.value=s.body||"";
     proxyToggle.checked=!!s.useProxy;
+    repeatCountEl.value=(s.repeatCount===undefined||s.repeatCount===null||s.repeatCount==="")?1:s.repeatCount;
+    repeatDelayEl.value=(s.repeatDelay===undefined||s.repeatDelay===null||s.repeatDelay==="")?0:s.repeatDelay;
     setRows($("paramsList"),s.params||[]);
     setRows($("headersList"),s.headers||[]);
-    updateCounts(); validateJson(); syncProxyUI();
+    updateCounts(); validateJson(); syncProxyUI(); syncRepeatUI();
   }
   [methodEl,urlEl,bodyEl,contentTypeEl,authTypeEl,authValueEl].forEach(el=>{
     el.addEventListener("input",()=>{save(); if(el===bodyEl)validateJson();});
@@ -759,11 +813,32 @@
     else if(proxyToggle.checked){proxyStatus.title="proxy.php unreachable?";}
   }).catch(()=>{ if(proxyToggle.checked) toast("proxy.php unreachable"); });
 
+  /* ---------- repeat / multi-request ---------- */
+  function readBatch(){
+    let count=parseInt(repeatCountEl.value,10); if(!isFinite(count)||count<1)count=1;
+    let delay=parseInt(repeatDelayEl.value,10); if(!isFinite(delay)||delay<0)delay=0;
+    count=Math.min(count,500); delay=Math.min(delay,60000);
+    return {count,delay};
+  }
+  function syncRepeatUI(){
+    const {count,delay}=readBatch();
+    $("delayWrap").style.display=count>1?"inline-flex":"none";
+    const st=$("repeatStatus");
+    st.textContent=count>1?(count+"× · "+delay+" ms"):"once";
+    st.classList.toggle("on",count>1);
+    st.title=count>1?("Send "+count+" times, "+delay+" ms apart"):"Send the request once";
+  }
+  [repeatCountEl,repeatDelayEl].forEach(el=>{
+    el.addEventListener("input",()=>{syncRepeatUI();save();});
+    el.addEventListener("change",()=>{syncRepeatUI();save();});
+  });
+
   $("clearBtn").onclick=()=>{
     if(!confirm("Reset all fields?"))return;
     localStorage.removeItem(LS_KEY);
     methodEl.value="GET";urlEl.value="";bodyEl.value="";authTypeEl.value="none";authValueEl.value="";
     contentTypeEl.value="application/json"; proxyToggle.checked=false; syncProxyUI();
+    repeatCountEl.value=1; repeatDelayEl.value=0; syncRepeatUI();
     setRows($("paramsList"),[]);setRows($("headersList"),[{key:"Content-Type",value:"application/json",on:true}]);
     validateJson();save();toast("Reset — fields cleared");
   };
@@ -816,15 +891,29 @@
     return bodyEl.value;
   }
 
-  /* ---------- send ---------- */
-  let controller=null;
+  /* ---------- send (single + batch) ---------- */
+  let controller=null, batchRunning=false, batchCancel=false, sleepWake=null;
   sendBtn.onclick=send;
   document.addEventListener("keydown",e=>{
     if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();send();}
     if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="s"){e.preventDefault();$("formatBtn").click();}
   });
 
+  function sleep(ms){
+    return new Promise(res=>{
+      const t=setTimeout(()=>{sleepWake=null;res();},ms);
+      sleepWake=()=>{clearTimeout(t);sleepWake=null;res();};
+    });
+  }
+  function stopBatch(){
+    batchCancel=true;
+    if(sleepWake)sleepWake();
+    if(controller){try{controller.abort();}catch{}}
+    sendBtn.disabled=true; sendBtn.textContent="Stopping…";
+  }
+
   async function send(){
+    if(batchRunning){stopBatch();return;}
     save();
     const finalUrl=buildUrl();
     if(!finalUrl){toast("Enter a URL first");urlEl.focus();return;}
@@ -834,11 +923,38 @@
     }
     if(controller)controller.abort();
     controller=new AbortController();
+    const {count,delay}=readBatch();
+    if(count>1&&typeof poolToggle!=="undefined"&&poolToggle.checked&&!proxyToggle.checked){
+      toast("Pool proxies need the PHP proxy toggle on");
+    }
+    if(count>1) await runBatch(finalUrl,count,delay);
+    else await runSingle(finalUrl);
+  }
+
+  async function runSingle(finalUrl){
+    sendBtn.disabled=true; sendBtn.innerHTML='<span class="spinner"></span>Sending';
+    $("respHint").textContent=proxyToggle.checked?"via proxy.php…":"loading…";
+    $("respError").innerHTML="";
+    try{
+      const r=await performRequest(finalUrl);
+      if(batchRunning)return;
+      if(r.aborted){$("respHint").textContent="aborted";return;}
+      if(r.ok){
+        pushHistory(methodEl.value,finalUrl,r.status,r.ms);
+        $("respHint").textContent=r.ms+" ms"+(r.viaProxy?" · proxy"+(r.usedGet?" · get":""):"");
+        if(r.viaProxy&&typeof loadPool==="function")loadPool(true);
+      }else{
+        $("respHint").textContent="error";
+      }
+    }finally{
+      if(!batchRunning){sendBtn.disabled=false; sendBtn.textContent="Send";}
+    }
+  }
+
+  async function performRequest(finalUrl){
     const headers=buildHeaders(), body=buildBody();
     const viaProxy=proxyToggle.checked;
     const started=performance.now();
-    sendBtn.disabled=true; sendBtn.innerHTML='<span class="spinner"></span>Sending';
-    $("respHint").textContent=viaProxy?"via proxy.php…":"loading…";
     $("respError").innerHTML="";
 
     try{
@@ -866,7 +982,8 @@
           const q=new URLSearchParams({
             url:finalUrl, method:methodEl.value,
             headers:JSON.stringify(headers),
-            body_b64:b64encodeUnicode(body||"")
+            body_b64:b64encodeUnicode(body||""),
+            use_pool:payload.use_pool?"1":"0"
           });
           const gRes=await fetch("proxy.php?"+q.toString(),{signal:controller.signal});
           const gText=await gRes.text();
@@ -890,9 +1007,7 @@
         renderFromData(data.status, data.statusText||"", hObj, text, data.time_ms??ms, ms, ct, true);
         if(data.proxy_used){const pu=data.proxy_used;$("respMeta").innerHTML+=`<span class="meta-item" title="Outbound proxy from proxy.json">proxy ${esc(pu.host)}:${esc(String(pu.port))} · used ${pu.used}</span>`;}
         if(data.proxy_warning){$("respMeta").innerHTML+=`<span class="meta-item" title="${esc(data.proxy_warning)}">pool: sent direct</span>`;}
-        pushHistory(methodEl.value,finalUrl,data.status,ms);
-        $("respHint").textContent=ms+" ms · proxy"+(usedGet?" · get":"");
-        if(typeof loadPool==="function")loadPool(true);
+        return {ok:true, ms, status:data.status, viaProxy:true, usedGet, proxy:data.proxy_used||null, warning:data.proxy_warning||null};
       }else{
         const res=await fetch(finalUrl,{method:methodEl.value,headers,body,signal:controller.signal});
         const ms=Math.round(performance.now()-started);
@@ -902,24 +1017,91 @@
         let text=""; try{text=new TextDecoder().decode(buf);}catch{text=""}
         const hObj={}; res.headers.forEach((v,k)=>hObj[k]=v);
         renderFromData(res.status,res.statusText||"",hObj,text,ms,size,ct,false);
-        pushHistory(methodEl.value,finalUrl,res.status,ms);
-        $("respHint").textContent=ms+" ms";
+        return {ok:true, ms, status:res.status, viaProxy:false, usedGet:false, proxy:null, warning:null};
       }
     }catch(err){
       const ms=Math.round(performance.now()-started);
-      $("respEmpty").style.display="none"; $("respContent").style.display="block";
-      $("respMeta").innerHTML=`<span class="status-pill err"><i></i>ERROR</span><span class="meta-item"><b>${ms}</b> ms</span>`+(viaProxy?`<span class="meta-item">via proxy.php</span>`:"");
-      $("respPretty").textContent=""; $("respRaw").textContent=String(err&&err.message||err);
-      document.querySelector('[data-rtab="raw"]').click();
-      $("respHeadersTable").innerHTML="";
-      const tip=viaProxy
-        ? `Proxy call failed. Check that <code>proxy.php</code> sits next to <code>index.html</code> and PHP-cURL is enabled.`
-        : `Usually CORS, DNS, mixed-content (http on https page), or offline. Tip: enable <b>PHP proxy</b> above to bypass CORS. Open DevTools → Network for details.`;
-      $("respError").innerHTML=`<div class="error-box"><strong>Request failed</strong><div>${esc(String(err&&err.message||err))}</div><div style="margin-top:8px;color:var(--text-3);font-size:12px">${tip}</div></div>`;
-      $("respHint").textContent="error";
-    }finally{
-      sendBtn.disabled=false; sendBtn.textContent="Send";
+      const aborted=!!err&&(err.name==="AbortError"||/abort/i.test(String(err.message||"")));
+      if(aborted)return {ok:false, aborted:true, ms, viaProxy, error:"aborted"};
+      renderRequestError(err,ms,viaProxy);
+      return {ok:false, ms, viaProxy, error:String(err&&err.message||err), proxy:null, warning:null};
     }
+  }
+
+  function renderRequestError(err,ms,viaProxy){
+    $("respEmpty").style.display="none"; $("respContent").style.display="block";
+    $("respMeta").innerHTML=`<span class="status-pill err"><i></i>ERROR</span><span class="meta-item"><b>${ms}</b> ms</span>`+(viaProxy?`<span class="meta-item">via proxy.php</span>`:"");
+    $("respPretty").textContent=""; $("respRaw").textContent=String(err&&err.message||err);
+    document.querySelector('[data-rtab="raw"]').click();
+    $("respHeadersTable").innerHTML="";
+    const tip=viaProxy
+      ? `Proxy call failed. Check that <code>proxy.php</code> sits next to <code>index.html</code> and PHP-cURL is enabled.`
+      : `Usually CORS, DNS, mixed-content (http on https page), or offline. Tip: enable <b>PHP proxy</b> above to bypass CORS. Open DevTools → Network for details.`;
+    $("respError").innerHTML=`<div class="error-box"><strong>Request failed</strong><div>${esc(String(err&&err.message||err))}</div><div style="margin-top:8px;color:var(--text-3);font-size:12px">${tip}</div></div>`;
+    $("respHint").textContent="error";
+  }
+
+  /* ---------- batch runner ---------- */
+  function batchLabel(i,count,delay,viaProxy,extra){
+    return i+"/"+count+" · "+delay+" ms delay"+(viaProxy?" · via proxy":"")+(extra?" · "+extra:"");
+  }
+  function addBatchRow(r,viaProxy){
+    const row=document.createElement("div"); row.className="batch-item";
+    const idx=document.createElement("span"); idx.className="i"; idx.textContent="#"+r.i;
+    const st=document.createElement("span"); st.className="s"+(r.ok?"":" bad");
+    st.textContent=r.ok?String(r.status):"ERR";
+    const px=document.createElement("span"); px.className="px";
+    if(r.proxy) px.textContent=(r.proxy.type?r.proxy.type+" ":"")+r.proxy.host+":"+r.proxy.port;
+    else if(r.error) px.textContent=r.error;
+    else px.textContent=viaProxy?(r.warning?"direct (pool empty)":"direct"):"direct";
+    if(r.proxy) px.title="proxy used for request #"+r.i;
+    else if(r.error) px.title=r.error;
+    const ms=document.createElement("span"); ms.className="ms"; ms.textContent=r.ms+" ms";
+    row.appendChild(idx); row.appendChild(st); row.appendChild(px); row.appendChild(ms);
+    const list=$("batchList");
+    list.appendChild(row);
+    list.scrollTop=list.scrollHeight;
+  }
+  async function runBatch(finalUrl,count,delay){
+    batchRunning=true; batchCancel=false;
+    const viaProxy=proxyToggle.checked;
+    sendBtn.disabled=false; sendBtn.textContent="Stop";
+    $("batchBox").style.display="block";
+    $("batchList").innerHTML="";
+    $("batchProgress").textContent=batchLabel(0,count,delay,viaProxy,"starting");
+    const t0=performance.now();
+    const results=[];
+
+    for(let i=1;i<=count;i++){
+      if(batchCancel)break;
+      $("respHint").textContent="batch "+i+"/"+count+"…";
+      $("batchProgress").textContent=batchLabel(i,count,delay,viaProxy);
+      const r=await performRequest(finalUrl);
+      r.i=i; results.push(r);
+      addBatchRow(r,viaProxy);
+      if(r.aborted)break;
+      if(i<count&&!batchCancel&&delay>0) await sleep(delay);
+    }
+
+    const total=Math.round(performance.now()-t0);
+    const sent=results.length;
+    const ok=results.filter(r=>r.ok).length;
+    const failed=sent-ok;
+    const stopped=batchCancel;
+    batchRunning=false; batchCancel=false;
+    sendBtn.disabled=false; sendBtn.textContent="Send";
+
+    if(sent){
+      $("batchProgress").textContent=sent+"/"+count+" sent · "+ok+" ok"+(failed?" · "+failed+" failed":"")+" · "+total+" ms"+(stopped?" · stopped":"");
+      pushHistory(methodEl.value,finalUrl,ok+"/"+sent+" ok",total);
+      $("respHint").textContent="batch "+sent+"/"+count+" · "+ok+" ok · "+total+" ms";
+      toast("Batch done — "+ok+"/"+sent+" ok");
+    }else{
+      $("batchProgress").textContent="stopped before any request";
+      $("respHint").textContent="stopped";
+      toast("Batch stopped");
+    }
+    if(viaProxy&&typeof loadPool==="function")loadPool(true);
   }
 
   function renderFromData(status,statusText,headersObj,text,timeMs,totalMs,ct,viaProxy){
@@ -1253,7 +1435,7 @@
   const LS_ACTIVE = "minimal-request-active-tab-v1";
   let tabs=[], activeTabId=null, renamingId=null;
   const uid=()=>"t"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-  function blankSnapshot(){return {method:"GET",url:"",params:[],headers:[{key:"Content-Type",value:"application/json",on:true}],authType:"none",authValue:"",contentType:"application/json",body:"",useProxy:proxyToggle.checked};}
+  function blankSnapshot(){return {method:"GET",url:"",params:[],headers:[{key:"Content-Type",value:"application/json",on:true}],authType:"none",authValue:"",contentType:"application/json",body:"",useProxy:proxyToggle.checked,repeatCount:1,repeatDelay:0};}
   function snapshotHasContent(s){
     if(!s||typeof s!=="object")return false;
     return !!((s.url||"").trim()||(s.body||"").trim()||
@@ -1376,6 +1558,9 @@
     authTypeEl.value=s.authType||"none";authValueEl.value=s.authValue||"";
     contentTypeEl.value=s.contentType||"application/json";bodyEl.value=s.body||"";
     if(typeof s.useProxy==="boolean"){proxyToggle.checked=s.useProxy;syncProxyUI();}
+    repeatCountEl.value=(s.repeatCount===undefined||s.repeatCount===null||s.repeatCount==="")?1:s.repeatCount;
+    repeatDelayEl.value=(s.repeatDelay===undefined||s.repeatDelay===null||s.repeatDelay==="")?0:s.repeatDelay;
+    syncRepeatUI();
     setRows($("paramsList"),s.params||[]);
     setRows($("headersList"),s.headers||[]);
     updateCounts();validateJson();
@@ -1404,7 +1589,7 @@
   loadTabs();
   applySnapshot((activeTab()&&activeTab().snapshot)||blankSnapshot(),false);
   try{localStorage.setItem(LS_KEY,JSON.stringify(collect()));}catch{}
-  renderTabs(); renderHistory(); syncProxyUI(); syncPoolUI(); loadPool(true); updateCounts(); validateJson();
+  renderTabs(); renderHistory(); syncProxyUI(); syncRepeatUI(); syncPoolUI(); loadPool(true); updateCounts(); validateJson();
 })();
 </script>
 </body>
