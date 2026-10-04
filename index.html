@@ -892,7 +892,7 @@
   }
 
   /* ---------- send (single + batch) ---------- */
-  let controller=null, batchRunning=false, batchCancel=false, sleepWake=null;
+  let controller=null, batchRunning=false, batchCancel=false, sleepWake=null, runSeq=0;
   sendBtn.onclick=send;
   document.addEventListener("keydown",e=>{
     if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();send();}
@@ -932,12 +932,13 @@
   }
 
   async function runSingle(finalUrl){
+    const myRun=++runSeq;
     sendBtn.disabled=true; sendBtn.innerHTML='<span class="spinner"></span>Sending';
     $("respHint").textContent=proxyToggle.checked?"via proxy.php…":"loading…";
     $("respError").innerHTML="";
     try{
       const r=await performRequest(finalUrl);
-      if(batchRunning)return;
+      if(myRun!==runSeq||batchRunning)return;
       if(r.aborted){$("respHint").textContent="aborted";return;}
       if(r.ok){
         pushHistory(methodEl.value,finalUrl,r.status,r.ms);
@@ -946,6 +947,10 @@
       }else{
         $("respHint").textContent="error";
       }
+    }finally{
+      if(myRun===runSeq&&!batchRunning){sendBtn.disabled=false; sendBtn.textContent="Send";}
+    }
+  }
     }finally{
       if(!batchRunning){sendBtn.disabled=false; sendBtn.textContent="Send";}
     }
