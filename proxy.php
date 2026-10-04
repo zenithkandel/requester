@@ -184,6 +184,11 @@ if (is_array($headersIn)) {
 // proxy used to burn the whole timeout so the host killed PHP and served its HTML 502 page.
 $usePool      = !empty($data['use_pool']);
 $maxTries     = $usePool ? 3 : 1;
+// 3 pool tries must still finish before a typical ~30s gateway timeout, otherwise the
+// host kills PHP and serves an HTML 502 page instead of our JSON.
+$perTry       = $usePool ? 9 : 20;
+$connectTo    = $usePool ? 4 : 5;
+$stallTime    = $usePool ? 4 : 8;
 $proxyUsed    = null;
 $proxyWarning = null;
 $lastError    = '';
@@ -217,13 +222,13 @@ for ($try = 1; $try <= $maxTries; $try++) {
         CURLOPT_HTTPHEADER      => $outHeaders,
         CURLOPT_FOLLOWLOCATION  => true,
         CURLOPT_MAXREDIRS       => 5,
-        CURLOPT_TIMEOUT         => 20,   // keep well under host gateway timeouts
-        CURLOPT_CONNECTTIMEOUT  => 5,
+        CURLOPT_TIMEOUT         => $perTry,   // keep well under host gateway timeouts
+        CURLOPT_CONNECTTIMEOUT  => $connectTo,
         CURLOPT_SSL_VERIFYPEER  => true,
         CURLOPT_SSL_VERIFYHOST  => 2,
         CURLOPT_ENCODING        => '',   // accept gzip/deflate, auto-decode
         CURLOPT_LOW_SPEED_LIMIT => 64,   // kill stalled transfers instead of hanging
-        CURLOPT_LOW_SPEED_TIME  => 8,
+        CURLOPT_LOW_SPEED_TIME  => $stallTime,
         // Stream instead of RETURNTRANSFER: a multi-MB body used to exhaust memory,
         // crash the worker and surface as the host's HTML 502 page.
         CURLOPT_HEADERFUNCTION  => function ($c, $line) use (&$headerStr, &$respBody) {

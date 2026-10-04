@@ -892,6 +892,7 @@
   }
 
   /* ---------- send (single + batch) ---------- */
+  const REQUEST_TIMEOUT_MS=35000;
   let controller=null, batchRunning=false, batchCancel=false, sleepWake=null, runSeq=0;
   sendBtn.onclick=send;
   document.addEventListener("keydown",e=>{
@@ -989,17 +990,13 @@
             body_b64:b64encodeUnicode(body||""),
             use_pool:payload.use_pool?"1":"0"
           });
-          const gRes=await fetch("proxy.php?"+q.toString(),{signal:controller.signal});
+          const gRes=await fetch("proxy.php?"+q.toString(),{signal:ctrl.signal});
           const gText=await gRes.text();
           ms=Math.round(performance.now()-started);
           try{ data=JSON.parse(gText); }catch{ data=null; }
-          if(!data){
-            const preview=gText.slice(0,400).replace(/\s+/g," ").trim()||"(empty response)";
-            throw new Error("proxy.php returned non-JSON (status "+gRes.status+"). Body: "+preview+" — Open proxy.php directly in browser to see the real error. If POST gives 405, the GET fallback above should have worked; check your server allows GET/POST to .php files.");
-          }
+          if(!data) throw new Error(proxyNonJsonError(gRes.status,gText));
         } else if(!data){
-          const preview=(postText||"").slice(0,400).replace(/\s+/g," ").trim()||"(empty response)";
-          throw new Error("proxy.php returned non-JSON (status "+postRes.status+"). Body: "+preview+" — Open proxy.php directly in browser to see the real error.");
+          throw new Error(proxyNonJsonError(postRes.status,postText));
         }
         if(data.error){throw new Error("Proxy: "+data.error);}
         let text=data.body||"";
@@ -1013,7 +1010,7 @@
         if(data.proxy_warning){$("respMeta").innerHTML+=`<span class="meta-item" title="${esc(data.proxy_warning)}">pool: sent direct</span>`;}
         return {ok:true, ms, status:data.status, viaProxy:true, usedGet, proxy:data.proxy_used||null, warning:data.proxy_warning||null};
       }else{
-        const res=await fetch(finalUrl,{method:methodEl.value,headers,body,signal:controller.signal});
+        const res=await fetch(finalUrl,{method:methodEl.value,headers,body,signal:ctrl.signal});
         const ms=Math.round(performance.now()-started);
         const buf=await res.arrayBuffer();
         const size=buf.byteLength;
@@ -1026,10 +1023,36 @@
     }catch(err){
       const ms=Math.round(performance.now()-started);
       const aborted=!!err&&(err.name==="AbortError"||/abort/i.test(String(err.message||"")));
+      if(aborted&&timedOut){
+        const secs=Math.round(REQUEST_TIMEOUT_MS/1000);
+        const te=new Error("Timed out after "+secs+"s — "+(viaProxy?"proxy.php never answered (dead/slow proxy, or the host killed PHP)":"the server never answered")+".");
+        renderRequestError(te,ms,viaProxy);
+        return {ok:false, ms, viaProxy, error:"timeout after "+secs+"s"};
+      }
       if(aborted)return {ok:false, aborted:true, ms, viaProxy, error:"aborted"};
       renderRequestError(err,ms,viaProxy);
       return {ok:false, ms, viaProxy, error:String(err&&err.message||err), proxy:null, warning:null};
+    }finally{
+      clearTimeout(to);
     }
+  }
+
+  // proxy.php should always answer JSON — if we got HTML back, the host/gateway intervened.
+  function proxyNonJsonError(status,text){
+    const clean=String(text||"").replace(/\s+/g," ").trim();
+    const title=((clean.match(/<title>([^<]*)<\/title>/i)||[])[1]||"").trim();
+    const snippet=(clean.slice(0,180))+(clean.length>180?"…":"");
+    const reach='Open proxy.php directly in the browser — you should get {"ok":true,...}.';
+    if(status===502||status===503||status===504){
+      return "proxy.php returned "+status+(title?' ("'+title+'")':"")+" as an HTML page instead of JSON — PHP never produced a response, your host/gateway killed it. Usual causes: a dead or very slow proxy in the pool, an upstream that took too long, or a memory/time limit on the host. Fixes: refresh the proxy pool, lower the repeat count, or run locally. Page said: "+snippet;
+    }
+    if(status===404){
+      return "proxy.php not found (404) — it must sit in the same folder as index.html on the server. "+reach;
+    }
+    if(status===405){
+      return "proxy.php got 405 — this host blocks POST to .php files; the GET fallback should have been used instead. Check the server allows GET/POST on .php files. "+reach;
+    }
+    return "proxy.php returned non-JSON (status "+status+"). "+reach+" Body: "+(snippet||"(empty)");
   }
 
   function renderRequestError(err,ms,viaProxy){
